@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  aprovacao-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Variáveis passadas no momento do build
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+    container_name: aprovacao-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"  # Altere a porta se necessário (ex: 3001:80)
+    networks:
+      - aprovacao-network
+    labels:
+      # Labels para nginx-proxy-manager (opcional)
+      - "com.nginx-proxy-manager.enable=true"
+
+networks:
+  aprovacao-network:
+    driver: bridge
+
