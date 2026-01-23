@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { supabase, ApprovalRequest, sendResponseWebhook } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import DataTable from '../components/DataTable';
 
 export default function AllRequests() {
   const { user } = useAuth();

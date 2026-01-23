@@ -171,7 +171,7 @@ export default function Dashboard() {
                 outerRadius={80}
                 label
               >
-                {(stats?.byStatus || []).map((entry, index) => (
+                {(stats?.byStatus || []).map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

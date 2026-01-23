@@ -13,7 +13,7 @@ export default function Pending() {
   const [requests, setRequests] = useState<ApprovalRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<ApprovalRequest | null>(null);
-  const [actionModal, setActionModal] = useState<{ type: string; request: ApprovalRequest } | null>(null);
+  const [actionModal, setActionModal] = useState<{ type: 'approve' | 'reject' | 'clarify' | 'cancel'; request: ApprovalRequest } | null>(null);
   const [receiptModal, setReceiptModal] = useState<{ receiptUrl: string } | null>(null);
 
   useEffect(() => {
