@@ -1,32 +1,21 @@
 import { useState } from 'react';
-
-interface Request {
-  id: string;
-  id_code: string;
-  base: string;
-  description: string;
-  amount: string;
-  status: string;
-  created_at: string;
-  receipt_url?: string | null;
-  requester?: { id: string; username: string };
-}
+import { ApprovalRequest } from '../services/supabase';
 
 interface DataTableProps {
-  data: Request[];
+  data: ApprovalRequest[];
   loading?: boolean;
-  onRowClick?: (request: Request) => void;
-  onReceiptClick?: (request: Request) => void;
+  onRowClick?: (request: ApprovalRequest) => void;
+  onReceiptClick?: (request: ApprovalRequest) => void;
   actions?: Array<{
     label: string;
-    onClick: (request: Request) => void;
+    onClick: (request: ApprovalRequest) => void;
     className?: string;
   }>;
 }
 
 export default function DataTable({ data, loading, onRowClick, onReceiptClick, actions }: DataTableProps) {
   const [search, setSearch] = useState('');
-  const [sortField, setSortField] = useState<keyof Request | null>(null);
+  const [sortField, setSortField] = useState<keyof ApprovalRequest | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const filteredData = data.filter((item) => {
@@ -51,7 +40,7 @@ export default function DataTable({ data, loading, onRowClick, onReceiptClick, a
     return 0;
   });
 
-  const handleSort = (field: keyof Request) => {
+  const handleSort = (field: keyof ApprovalRequest) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
