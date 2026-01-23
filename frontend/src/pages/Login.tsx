@@ -35,10 +35,10 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
-      <div className="glass rounded-3xl p-8 w-full max-w-md border border-border-neon">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-neon-primary mb-2">Alçada</h1>
-          <p className="text-text-muted">Controle de Aprovação</p>
+      <div className="glass rounded-3xl p-6 md:p-8 w-full max-w-md border border-border-neon">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-neon-primary mb-2">Alçada</h1>
+          <p className="text-text-muted text-sm md:text-base">Controle de Aprovação</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -74,7 +74,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-2xl bg-neon-primary text-dark-bg font-semibold btn-neon disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 rounded-2xl bg-neon-primary text-dark-bg font-semibold btn-neon disabled:opacity-50 disabled:cursor-not-allowed no-outline"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>

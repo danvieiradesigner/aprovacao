@@ -31,5 +31,9 @@ export default {
     },
   },
   plugins: [],
+  corePlugins: {
+    // Desabilitar ring de focus padrão do Tailwind
+    ringWidth: false,
+  },
 }
 

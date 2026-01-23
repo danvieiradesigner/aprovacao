@@ -121,8 +121,8 @@ export default function History() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary mb-2">Histórico</h1>
-        <p className="text-text-muted">Log de todas as ações realizadas no sistema</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">Histórico</h1>
+        <p className="text-text-muted text-sm md:text-base">Log de todas as ações realizadas no sistema</p>
       </div>
 
       <div className="glass rounded-3xl p-4 border border-border-neon">
@@ -136,7 +136,8 @@ export default function History() {
       </div>
 
       <div className="glass rounded-3xl border border-border-neon overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Versão Desktop - Tabela */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-dark-surface-alt border-b border-border-neon">
               <tr>
@@ -189,6 +190,60 @@ export default function History() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Versão Mobile - Cards */}
+        <div className="md:hidden">
+          {filteredEvents.length === 0 ? (
+            <div className="px-4 py-12 text-center text-text-muted">
+              Nenhum evento encontrado
+            </div>
+          ) : (
+            <div className="p-4 space-y-4">
+              {filteredEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="p-4 rounded-xl bg-dark-surface-alt border border-border-neon"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-neon-primary font-semibold text-base">
+                          {event.request?.id_code || '-'}
+                        </h3>
+                        {getStatusBadge(event.request?.status || 'PENDING')}
+                      </div>
+                      <p className="text-text-muted text-xs mb-1">
+                        {new Date(event.created_at).toLocaleString('pt-BR')}
+                      </p>
+                      <p className="text-text-primary text-sm">{event.request?.base || '-'}</p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionColor(event.action)}`}>
+                      {getActionLabel(event.action)}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 pt-3 border-t border-border-neon">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <p className="text-text-muted text-xs">Usuário</p>
+                        <p className="text-text-primary text-sm font-medium">
+                          {event.actor?.username || '-'}
+                        </p>
+                        <p className="text-text-muted text-xs">{event.actor?.role || '-'}</p>
+                      </div>
+                    </div>
+                    {event.message && (
+                      <div className="mt-2">
+                        <p className="text-text-muted text-xs">Mensagem</p>
+                        <p className="text-text-primary text-sm mt-1">{event.message}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

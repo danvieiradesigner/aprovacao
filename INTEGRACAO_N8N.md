@@ -22,11 +22,17 @@ Esta URL será usada para enviar notificações de atualizações de status para
 
 ### 2. Endpoint para Receber Dados do n8n
 
-O sistema expõe um endpoint webhook para receber dados do n8n:
+O sistema expõe uma **Edge Function do Supabase** para receber dados do n8n:
 
-**URL**: `POST /api/n8n/webhook`
+**URL**: `POST https://[SEU_PROJETO].supabase.co/functions/v1/n8n-webhook`
 
-**Autenticação**: Não requerida (webhook público)
+**Autenticação**: Requer header `apikey` com a chave anon do Supabase (ou service role para bypass RLS)
+
+**Headers necessários**:
+```
+apikey: [SUA_SUPABASE_ANON_KEY]
+Content-Type: application/json
+```
 
 **Exemplo de Payload**:
 
@@ -131,11 +137,32 @@ Quando uma solicitação é atualizada (aprovada, rejeitada, cancelada, etc.), o
 ### Workflow 1: Enviar Solicitação para o Sistema
 
 1. Crie um novo workflow no n8n
-2. Adicione um nó HTTP Request
+2. Adicione um nó **HTTP Request**
 3. Configure:
    - **Method**: POST
-   - **URL**: `http://seu-backend.com/api/n8n/webhook`
+   - **URL**: `https://[SEU_PROJETO].supabase.co/functions/v1/n8n-webhook`
+   - **Headers**:
+     - `apikey`: [SUA_SUPABASE_ANON_KEY]
+     - `Content-Type`: `application/json`
    - **Body**: JSON com os dados da solicitação
+   
+**Exemplo de configuração no n8n**:
+```
+URL: https://abcdefghijklmnop.supabase.co/functions/v1/n8n-webhook
+Method: POST
+Headers:
+  - apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  - Content-Type: application/json
+Body (JSON):
+{
+  "base": "SP",
+  "description": "Despesa de viagem",
+  "amount": 1500.50,
+  "requester_email": "usuario@exemplo.com",
+  "approver_email": "aprovador@exemplo.com",
+  "receipt_url": "https://drive.google.com/file/d/123456789/view"
+}
+```
 
 ### Workflow 2: Receber Atualizações do Sistema
 

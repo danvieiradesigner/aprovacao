@@ -7,13 +7,11 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    // Criar cliente Supabase com service role key
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -25,7 +23,6 @@ serve(async (req) => {
       }
     );
 
-    // Obter token do usuário que está fazendo a requisição
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -34,7 +31,6 @@ serve(async (req) => {
       );
     }
 
-    // Verificar se o usuário é ADMIN
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
 
@@ -45,7 +41,6 @@ serve(async (req) => {
       );
     }
 
-    // Verificar role do usuário
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profiles')
       .select('role')
@@ -59,7 +54,6 @@ serve(async (req) => {
       );
     }
 
-    // Obter dados do novo usuário
     const { email, password, username, role } = await req.json();
 
     if (!email || !password || !username || !role) {
@@ -69,7 +63,6 @@ serve(async (req) => {
       );
     }
 
-    // Criar usuário no Supabase Auth
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -87,10 +80,8 @@ serve(async (req) => {
       );
     }
 
-    // Aguardar trigger ou criar perfil manualmente
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Verificar se o perfil foi criado pelo trigger
     const { data: existingProfile } = await supabaseAdmin
       .from('user_profiles')
       .select('*')
@@ -98,7 +89,6 @@ serve(async (req) => {
       .single();
 
     if (!existingProfile) {
-      // Criar perfil manualmente se o trigger não executou
       const { error: profileInsertError } = await supabaseAdmin
         .from('user_profiles')
         .insert({
@@ -108,7 +98,6 @@ serve(async (req) => {
         });
 
       if (profileInsertError) {
-        // Se falhar, deletar o usuário criado
         await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
         return new Response(
           JSON.stringify({ error: 'Erro ao criar perfil: ' + profileInsertError.message }),

@@ -1,0 +1,1370 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "filtro-notas",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -5456,
+          3776
+        ],
+        "id": "0e730a2d-3cd2-4299-9397-3032c6424aaa",
+        "name": "Webhook",
+        "webhookId": "ebadc9e0-3431-4cd9-aa9a-76711ef13a70"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "35564665-f6fa-4f4f-b9e2-c2498e15222e",
+                "name": "data.remoteJid",
+                "value": "={{ $json.body.data.key.remoteJid }}",
+                "type": "string"
+              },
+              {
+                "id": "5361ccd9-341b-44d2-9ab7-98957588ffcd",
+                "name": "data.fromMe",
+                "value": "={{ $json.body.data.key.fromMe }}",
+                "type": "boolean"
+              },
+              {
+                "id": "c3288898-4890-45e6-b8c2-719b467cc2b3",
+                "name": "data.id",
+                "value": "={{ $json.body.data.key.id }}",
+                "type": "string"
+              },
+              {
+                "id": "97a92e9f-70a0-4e37-b10b-30d61f4fe9e5",
+                "name": "data.text",
+                "value": "={{ $json.body.data.message.conversation }}{{ $json.body.data.message.extendedTextMessage.text }}",
+                "type": "string"
+              },
+              {
+                "id": "713e0d21-8851-4167-9f07-9dffddd49505",
+                "name": "data.messageType",
+                "value": "={{ $json.body.data.messageType }}",
+                "type": "string"
+              },
+              {
+                "id": "17ef83c1-581c-4ead-be02-51c07860d60f",
+                "name": "data.source",
+                "value": "={{ $json.body.data.source }}",
+                "type": "string"
+              },
+              {
+                "id": "58baac00-9baf-438d-bfe6-739ea31c349a",
+                "name": "evo.server_url",
+                "value": "=https://evo.appsoncafari.cloud",
+                "type": "string"
+              },
+              {
+                "id": "a24fd771-225b-49a1-a84c-4f74f234c878",
+                "name": "evo.instance",
+                "value": "={{ $json.body.instance }}",
+                "type": "string"
+              },
+              {
+                "id": "582c84eb-0936-4258-8afc-87726a352606",
+                "name": "evo.apikey",
+                "value": "={{ $json.body.apikey || 'B6D711FCDE4D4FD5936544120E713976' }}",
+                "type": "string"
+              },
+              {
+                "id": "78c2763e-193b-4f7a-a9a8-3e198acaf421",
+                "name": "data.mediaUrl",
+                "value": "={{ $json.body.data.message.audioMessage.url }}",
+                "type": "string"
+              },
+              {
+                "id": "301c3b26-6b5b-42a5-875c-a0fe52c36ea1",
+                "name": "base64",
+                "value": "={{ $json.body.data.message.base64 }}",
+                "type": "string"
+              },
+              {
+                "id": "15e4749f-51d7-44c3-9d8d-5f7c028e589c",
+                "name": "Telefone",
+                "value": "={{ $json.body.data.key.remoteJid.replaceAll(\"@s.whatsapp.net\",\"\") }}",
+                "type": "string"
+              },
+              {
+                "id": "92ad044e-f6e6-4d87-8921-2738e74ddde3",
+                "name": "nome",
+                "value": "={{ $json.body.data.pushName }}",
+                "type": "string"
+              },
+              {
+                "id": "73b5e08f-2cea-436f-a32e-70e766dfcb91",
+                "name": "mensagem_complete_redis",
+                "value": "={{ $json.body.data.message }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -4848,
+          3760
+        ],
+        "id": "c72a6c31-bf2c-47d8-99ad-2ba0be3db02a",
+        "name": "Data Handler1",
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://mrgnfzxjkhnrdxkfkuxc.supabase.co/functions/v1/get-or-create-contact",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yZ25menhqa2hucmR4a2ZrdXhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzNzA1NzQsImV4cCI6MjA4MDk0NjU3NH0.jn-tV7wjB8KgVv8KapEJ5sWHT5btHqfVzMBKZ4CzKrU"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"phone_number\": \"{{ $('Data Handler1').item.json.Telefone }}\"\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -4400,
+          3760
+        ],
+        "id": "get-contact-node",
+        "name": "Get Contact"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "contact-exists",
+                "name": "contact_exists",
+                "value": "={{ $json.contact ? true : false }}",
+                "type": "boolean"
+              },
+              {
+                "id": "contact-name",
+                "name": "contact_name",
+                "value": "={{ $json.contact?.name || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-email",
+                "name": "contact_email",
+                "value": "={{ $json.contact?.email || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-base",
+                "name": "contact_base",
+                "value": "={{ $json.contact?.base || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-phone",
+                "name": "contact_phone",
+                "value": "={{ $('Data Handler1').item.json.Telefone }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -4000,
+          3760
+        ],
+        "id": "set-contact-data",
+        "name": "Set Contact Data"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "check-contact-exists",
+                "leftValue": "={{ $json.contact_exists }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -3600,
+          3760
+        ],
+        "id": "check-contact-if",
+        "name": "Check Contact Exists"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "mensagem-first-time",
+                "name": "Mensagemtratada",
+                "value": "={{ $('Data Handler1').item.json.data.text }}",
+                "type": "string"
+              },
+              {
+                "id": "identifier-first-time",
+                "name": "identifier",
+                "value": "={{ $('Data Handler1').item.json.data.remoteJid }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-exists-first-time",
+                "name": "contact_exists",
+                "value": "={{ $json.contact_exists }}",
+                "type": "boolean"
+              },
+              {
+                "id": "contact-phone-first-time",
+                "name": "contact_phone",
+                "value": "={{ $json.contact_phone }}",
+                "type": "string"
+              },
+              {
+                "id": "link-comprovante-first-time",
+                "name": "link_comprovante",
+                "value": "=",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -3200,
+          3840
+        ],
+        "id": "prepare-first-time-flow",
+        "name": "Prepare First Time Flow"
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "={{ $('Data Handler1').item.json.data.remoteJid }}",
+          "value": "={{ $json.content }}"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -2832,
+          3856
+        ],
+        "id": "c4c0008e-e837-4e6d-8ca9-54e5dd09b54c",
+        "name": "Image Memory",
+        "credentials": {
+          "redis": {
+            "id": "WCc2AqjhU9R8RNcQ",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "toBinary",
+          "sourceProperty": "imagem",
+          "options": {
+            "fileName": "converterimagem",
+            "mimeType": "=image/jpeg"
+          }
+        },
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          -3792,
+          3856
+        ],
+        "id": "54d589c9-3819-45d2-8a16-70512c15d941",
+        "name": "Convert to File"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.text }}",
+                      "rightValue": {},
+                      "operator": {
+                        "type": "string",
+                        "operation": "notEmpty",
+                        "singleValue": true
+                      },
+                      "id": "ae4a01af-effe-4b31-9636-d38c94deb080"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "a8f2d2a4-e2a3-4627-9a43-5008fc6579b9",
+                      "leftValue": "={{ $json.imagem }}",
+                      "rightValue": "imageMessage",
+                      "operator": {
+                        "type": "string",
+                        "operation": "notEmpty",
+                        "singleValue": true
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Image"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          -4112,
+          3760
+        ],
+        "id": "767234fa-d38a-44a4-a84b-09a9696ca360",
+        "name": "Message Type1"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "204639b2-7c10-4fe4-af43-6ad8179d84e7",
+                "name": "Mensagemtratada",
+                "value": "={{ $json.text }}{{ $json.content || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "6541f5b8-d3cc-41b4-ac2a-1d60d4d542f6",
+                "name": "identifier",
+                "value": "={{ $('Data Handler1').item.json.data.remoteJid }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-exists-edit4",
+                "name": "contact_exists",
+                "value": "={{ $('Set Contact Data').item.json.contact_exists }}",
+                "type": "boolean"
+              },
+              {
+                "id": "contact-name-edit4",
+                "name": "contact_name",
+                "value": "={{ $('Set Contact Data').item.json.contact_name || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-email-edit4",
+                "name": "contact_email",
+                "value": "={{ $('Set Contact Data').item.json.contact_email || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-base-edit4",
+                "name": "contact_base",
+                "value": "={{ $('Set Contact Data').item.json.contact_base || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-phone-edit4",
+                "name": "contact_phone",
+                "value": "={{ $('Set Contact Data').item.json.contact_phone || '' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -2112,
+          3760
+        ],
+        "id": "1938267b-632b-4223-b1e6-b0341c10c9be",
+        "name": "Edit Fields4"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Questão do Usuário:{{ $json.Mensagemtratada }};\n\n⚠️ STATUS DO CONTATO ⚠️\n- Contato existe: {{ ($json.contact_exists !== undefined ? $json.contact_exists : $('Set Contact Data').item.json.contact_exists) ? 'SIM ✅' : 'NÃO ❌ - VOCÊ DEVE CADASTRAR AGORA!' }}\n- Nome: {{ $json.contact_name || $('Set Contact Data').item.json.contact_name || 'NÃO CADASTRADO - COLETAR AGORA' }}\n- Email: {{ $json.contact_email || $('Set Contact Data').item.json.contact_email || 'NÃO CADASTRADO - COLETAR AGORA' }}\n- Base: {{ $json.contact_base || $('Set Contact Data').item.json.contact_base || 'NÃO CADASTRADO - COLETAR AGORA' }}\n\n{{ ($json.contact_exists !== undefined ? $json.contact_exists : $('Set Contact Data').item.json.contact_exists) ? '' : '🚫 ATENÇÃO: CONTATO NÃO EXISTE! Você DEVE coletar nome, email e base ANTES de processar qualquer despesa. NÃO aceite processar despesas até ter esses dados!' }}",
+          "options": {
+            "systemMessage": "=Você é um classificador financeiro. Seu objetivo é transformar uma entrada do usuário (print/nota + texto) em um registro padronizado para uma planilha com as colunas `data`, `codigo`, `descricao`, `valor`.\n\n⚠️ REGRA CRÍTICA - CADASTRO OBRIGATÓRIO NA PRIMEIRA CONVERSA ⚠️\n\n**SE O CONTATO NÃO EXISTIR (contact_exists = false):**\n\n🚫 **VOCÊ NÃO PODE PROCESSAR NENHUMA DESPESA ATÉ COLETAR OS DADOS DO CONTATO!**\n\nNa PRIMEIRA mensagem do usuário, você DEVE:\n1. **Cumprimentar** de forma educada\n2. **Explicar** que precisa cadastrar os dados antes de processar despesas\n3. **Coletar OBRIGATORIAMENTE:**\n   - Nome completo da pessoa\n   - Email\n   - Base padrão (ex: SP, RJ, ADM, FRE)\n\n**NÃO ACEITE** processar despesas, imagens, valores ou qualquer outra coisa até ter esses 3 dados!\n\nApós coletar os 3 dados, execute IMEDIATAMENTE a tool \"Save Contact\" com:\n{\n  \"name\": \"nome completo coletado\",\n  \"email\": \"email coletado\",\n  \"base\": \"base coletada\"\n}\n\n(O phone_number será preenchido automaticamente pelo sistema)\n\n\n\n**SE O CONTATO JÁ EXISTIR (contact_exists = true):**\n- Use automaticamente: email como `requester_email`, base como base padrão\n- Use o nome para personalizar a conversa\n- Pode processar despesas normalmente\n\nINSTRUÇÕES GERAIS\n\nVocê recebe dados que podem vir acompanhados de imagem já analisada por outro agente.  \nAntes de pedir qualquer informação, verifique o contexto recebido:\n- Se existir `imagem_ok = true`, significa que o comprovante já foi processado. **Não peça novamente a imagem.**\n- Se existir `nota_fluxo`, use a mensagem contida nele como orientação (ex.: se foi imagem financeira ou genérica).\n\nFLUXO DE AÇÃO (APENAS SE O CONTATO JÁ EXISTIR OU APÓS CADASTRAR)\n\n1. **Imagem**\n   - Se o usuário **não enviou imagem** e `imagem_ok` não existir:\n     → Diga: \"Por favor, me envie o comprovante (print ou foto da nota).\"\n     → Não continue até receber.\n   - Se o usuário **enviou imagem**, use a descrição e o valor retornados pelo nó anterior como base.  \n     → **Não peça novamente a imagem.**\n\n2. **Descrição**\n   - Mesmo com imagem, sempre confirme com o usuário **sobre o que foi a compra** (ex.: “Uber”, “Almoço”, “Pagamento de software”).\n   - Use algo como:\n     → \"Pode me dizer em poucas palavras sobre o que foi essa compra?\"\n   - A resposta deve gerar uma descrição curta (3–10 palavras).\n\n3. **Valor**\n   - Se o valor já veio do nó anterior (`valor` válido), apenas confirme:\n     → \"O valor é R$ {valor_formatado}, certo?\"\n   - Se não houver valor:\n     → \"Me envie o valor da compra (ex.: 129,90).\"\n\n4. **Normalização**\n   - Descrição: 3–10 palavras, sem emojis ou adjetivos.\n   - Valor: aceite 129,90 / R$ 129,90 / 1.299,90 / 129.90.\n     → Remova R$, espaços e pontos de milhar.  \n     → Converta vírgula para ponto (ex.: 98.70).\n   - Data: use hoje no fuso America/Sao_Paulo (YYYY-MM-DD).\n   - Se o valor estiver inválido:\n     → \"Não entendi o valor. Envie no formato 129,90.\"\n\n5. **Sugestão de códigos**\n   Gere 5 opções no formato COD — Rótulo (3–6 caracteres), baseadas na descrição e no tipo de gasto identificado pela imagem.\n\n   Modelo de lista:\n   1) ALM — Alimentação  \n   2) TRA — Transporte  \n   3) MKT — Marketing  \n   4) ADM — Administrativo  \n   5) FRE — Frete/Entrega\n\n   **Códigos padrão personalizados:**\n   [ESPAÇO PARA CÓDIGOS PADRÃO]\n\n   Diga:\n   → \"Escolha 1–5 ou digite um código manual.\"\n\n6. **Escolha do cliente**\n   - Se o usuário responder 1–5 → mapeie para o código correspondente.\n   - Se digitar um código manual (ex.: SAU) → use exatamente como enviado (maiúsculo).\n\n7. **Pré-visualização**\n   Mostre o resumo exatamente assim:\nVou registrar assim:\ndata: YYYY-MM-DD\ncódigo: COD\ndescrição: \"TEXTO\"\nvalor: 123.45\nConfirmar? (sim/não)\n\nmarkdown\nCopiar código\n- Se responder “não”: permita editar descrição, valor e/ou código e repita o preview.\n\n8. **Confirmação final**\nQuando o usuário confirmar, execute a tool `\"Append Lançamento\"` e envie:\n{\n\"data\": \"YYYY-MM-DD\",\n\"codigo\": \"COD\",\n\"descricao\": \"TEXTO CURTO\",\n\"valor\": 123.45\n}\n\nmarkdown\nCopiar código\n\nPOLÍTICAS\n\n- Tom direto, educado e curto (pt-BR).  \n- Nunca invente valores nem códigos — sempre confirme antes de enviar.  \n- Se houver data explícita na nota e o usuário confirmar, use-a (YYYY-MM-DD).  \n- Não armazene imagens; use apenas como apoio para classificar.  \n- Sempre confirme antes de enviar para a planilha.  \n- Se `imagem_ok` for true, pule pedidos de imagem, mas peça sempre a descrição curta do gasto.\n\n⚠️ **LEMBRE-SE: SE contact_exists = false, você NÃO PODE processar despesas. Colete nome, email e base PRIMEIRO e salve com a tool \"Save Contact\". Só depois processe despesas.**"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          -1392,
+          3760
+        ],
+        "id": "9cb96e06-4d25-449f-8be3-d64589180df8",
+        "name": "Secretária"
+      },
+      {
+        "parameters": {
+          "operation": "push",
+          "list": "={{ $json.output }}",
+          "messageData": "={{ JSON.stringify({ role: 'assistant', content: $('Secretária').item.json.output }) }}",
+          "tail": true
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -1024,
+          3760
+        ],
+        "id": "811b3749-2736-416d-8ef3-4990bf437ab9",
+        "name": "Redis",
+        "credentials": {
+          "redis": {
+            "id": "WCc2AqjhU9R8RNcQ",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          -1728,
+          3968
+        ],
+        "id": "791ee9dd-f913-4ffd-88c5-0f47984f26fe",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "ykqKuFF5CKnlJHMM",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $('Data Handler1').item.json.evo.server_url + '/message/sendText/' + $('Data Handler1').item.json.evo.instance }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{ $('Data Handler1').item.json.evo.apikey }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ {\n  number: $('Data Handler1').item.json.data.remoteJid.replace(\"@s.whatsapp.net\", \"\"),\n  text: $json.output,\n  options: { delay: 2000, presence: \"composing\" }\n} }}",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -800,
+          3760
+        ],
+        "id": "d08bdf1f-1c35-439a-8af5-81e1481985bb",
+        "name": "Send Text"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8431e7e1-f41c-4015-b94e-b0da64830ac5",
+                "name": "imagem",
+                "value": "={{ $json.base64 }}",
+                "type": "string"
+              },
+              {
+                "id": "73a5ce75-decd-4663-b34b-4ef8f0fa2bb3",
+                "name": "text",
+                "value": "={{ $json.data.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -4336,
+          3760
+        ],
+        "id": "34bd885d-b3be-45e0-9078-fc8ec4b169a2",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $json.identifier }}\n",
+          "sessionTTL": 1800,
+          "contextWindowLength": 15
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+        "typeVersion": 1.5,
+        "position": [
+          -1584,
+          3968
+        ],
+        "id": "a7a8c899-f724-44b3-85c2-3cc26fe49e68",
+        "name": "Redis Chat Memory",
+        "credentials": {
+          "redis": {
+            "id": "WCc2AqjhU9R8RNcQ",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "name": "=comprovante- {{ $('Webhook').item.json.body.date_time }}",
+          "driveId": {
+            "__rl": true,
+            "value": "My Drive",
+            "mode": "list",
+            "cachedResultName": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1kKEoQsc0DP1CE_PygA_5VcVmx5NMUL6C",
+            "mode": "list",
+            "cachedResultName": "comprovantes",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1kKEoQsc0DP1CE_PygA_5VcVmx5NMUL6C"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          -3536,
+          3856
+        ],
+        "id": "aa53c97a-c3b3-4f8f-ba5d-2840b5dafb0d",
+        "name": "Upload file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "rEyxZHHv6D1E2Tyk",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "S2YKyux4BnzzaXJl",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/S2YKyux4BnzzaXJl",
+            "cachedResultName": "Registrar Lançamento no Dash"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "base": "={{ $('Set Contact Data').item.json.contact_base || $fromAI('base', ``, 'string') }}",
+              "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('description', ``, 'string') }}",
+              "amount": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('amount', ``, 'string') }}",
+              "requester_email": "={{ $('Set Contact Data').item.json.contact_email || $fromAI('requester_email', ``, 'string') }}",
+              "requester_phone": "={{ $json.numero || $('Set Contact Data').item.json.contact_phone || $('Data Handler1').item.json.Telefone || '' }}",
+              "receipt_url": "={{ $json.link_comprovante }}",
+              "note": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('note', ``, 'string') }}",
+              "codigo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('codigo', ``, 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "base",
+                "displayName": "base",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "description",
+                "displayName": "description",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "amount",
+                "displayName": "amount",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "requester_email",
+                "displayName": "requester_email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "requester_phone",
+                "displayName": "requester_phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "receipt_url",
+                "displayName": "receipt_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "note",
+                "displayName": "note",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "codigo",
+                "displayName": "codigo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              },
+              {
+                "id": "descricao",
+                "displayName": "descricao",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": true
+              },
+              {
+                "id": "valor",
+                "displayName": "valor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": true
+              },
+              {
+                "id": "link_comprovante",
+                "displayName": "link_comprovante",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          -1360,
+          3968
+        ],
+        "id": "474630ee-40f3-49e1-be10-e2ebcd0029f3",
+        "name": "Call 'My Sub-Workflow 1'"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "SAVE_CONTACT_WORKFLOW_ID",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "phone_number": "={{ $('Set Contact Data').item.json.contact_phone }}",
+              "name": "={{ $fromAI('name', ``, 'string') }}",
+              "email": "={{ $fromAI('email', ``, 'string') }}",
+              "base": "={{ $fromAI('base', ``, 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "phone_number",
+                "displayName": "phone_number",
+                "required": false,
+                "type": "string",
+                "removed": true
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "id": "email",
+                "displayName": "email",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "id": "base",
+                "displayName": "base",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          -1360,
+          4160
+        ],
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "FIRST_TIME_REGISTRATION_WORKFLOW_ID",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "phone_number": "={{ $('Set Contact Data').item.json.contact_phone }}",
+              "name": "={{ $fromAI('name', ``, 'string') }}",
+              "email": "={{ $fromAI('email', ``, 'string') }}",
+              "base": "={{ $fromAI('base', ``, 'string') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "phone_number",
+                "displayName": "phone_number",
+                "required": false,
+                "type": "string",
+                "removed": true
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "id": "email",
+                "displayName": "email",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "id": "base",
+                "displayName": "base",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          -1360,
+          4360
+        ],
+        "id": "first-time-registration-tool",
+        "name": "Save Contact"
+      },
+      {
+        "parameters": {
+          "resource": "image",
+          "operation": "analyze",
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4o",
+            "mode": "list",
+            "cachedResultName": "GPT-4O"
+          },
+          "text": "Você é um extrator de campos a partir de imagens de notas/recibos/comprovantes. Analise apenas a imagem recebida e responda SOMENTE em JSON, sem qualquer texto extra.\n\nObjetivo: retornar uma descrição curta (3–8 palavras) e o valor total. Se não houver elementos financeiros, sinalize que precisa de input do usuário.\n\nRegras de extração\n\n• Procure por: “Total”, “Valor final”, “Total a pagar”, “Valor do PIX”, “Valor da transação”.\n• Aceite formatos BR: R$ 1.234,56, 129,90, 1.299,90, 129.90.\n  → Remova “R$”, espaços e pontos de milhar; converta vírgula decimal para ponto (ex.: 98.70).\n• Se houver múltiplos valores, escolha o TOTAL (não some itens).\n• Se houver data legível, retorne em YYYY-MM-DD (opcional).\n• A descrição deve ser curta e objetiva (ex.: “Almoço iFood”, “Uber reunião”, “Supermercado”).\n\nSinalização para o próximo agente (muito importante)\n• Inclua um campo booleano \"imagem_ok\".\n  - true quando a imagem foi analisada com sucesso (mesmo que não seja possível extrair valor com confiança).\n  - false apenas se a imagem estiver ilegível/corrompida.\n• Inclua um campo \"nota_fluxo\" com uma frase curta para o próximo agente:\n  - Se imagem foi processada: \"Imagem analisada com sucesso; não peça comprovante.\"\n  - Se não for documento financeiro ou faltar valor: \"Imagem não financeira ou sem valor; peça descrição e valor.\"\n  - Se ilegível: \"Imagem ilegível; peça um novo comprovante.\"\n\nSaída OBRIGATÓRIA (JSON, sem comentários e sem texto fora do JSON):\n{\n  \"descricao\": \"texto curto ou \\\"\\\"\",\n  \"valor\": 123.45,\n  \"data\": \"YYYY-MM-DD\",\n  \"confianca\": 0.0,\n  \"needs_input\": false,\n  \"pergunta\": \"\",\n  \"imagem_ok\": true,\n  \"nota_fluxo\": \"mensagem curta para o próximo agente\"\n}\n\nCampos:\n• descricao: string curta; \"\" se não identificada.\n• valor: número decimal (ponto) ou null quando não identificado.\n• data: \"YYYY-MM-DD\" ou \"\".\n• confianca: 0–1 (certeza da extração).\n• needs_input: true quando faltar valor OU a imagem não for financeira.\n• pergunta: quando needs_input = true, use exatamente:\n  Me envie uma descrição curta e o valor (ex.: 129,90).\n• imagem_ok: conforme regras acima.\n• nota_fluxo: conforme regras acima.\n\nExemplos:\n\nNota com “Total R$ 98,70”\n{\"descricao\":\"Almoço iFood\",\"valor\":98.70,\"data\":\"2025-10-17\",\"confianca\":0.86,\"needs_input\":false,\"pergunta\":\"\",\"imagem_ok\":true,\"nota_fluxo\":\"Imagem analisada com sucesso; não peça comprovante.\"}\n\nFoto genérica / sem valores\n{\"descricao\":\"\",\"valor\":null,\"data\":\"\",\"confianca\":0.18,\"needs_input\":true,\"pergunta\":\"Me envie uma descrição curta e o valor (ex.: 129,90).\",\"imagem_ok\":true,\"nota_fluxo\":\"Imagem não financeira ou sem valor; peça descrição e valor.\"}\n\nImagem ilegível\n{\"descricao\":\"\",\"valor\":null,\"data\":\"\",\"confianca\":0.05,\"needs_input\":true,\"pergunta\":\"Me envie uma descrição curta e o valor (ex.: 129,90).\",\"imagem_ok\":false,\"nota_fluxo\":\"Imagem ilegível; peça um novo comprovante.\"}\n",
+          "imageUrls": "={{ $('Upload file').item.json.thumbnailLink }}",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.7,
+        "position": [
+          -3008,
+          3856
+        ],
+        "id": "c12a1f25-5112-4a78-8b2d-4d4de6091fe0",
+        "name": "Analyse Image",
+        "credentials": {
+          "openAiApi": {
+            "id": "ykqKuFF5CKnlJHMM",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -5248,
+          3776
+        ],
+        "id": "22b9c29e-2ed1-4d6d-9ae3-258fe93fefdd",
+        "name": "Wait",
+        "webhookId": "38076127-d3ec-4267-b676-e6aa9f61796d"
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+          "value": "={{ $json.text }}"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -3264,
+          3664
+        ],
+        "id": "2f66b0bd-3fa4-4fe0-8605-c8768509f7b0",
+        "name": "Text Memory1",
+        "credentials": {
+          "redis": {
+            "id": "WCc2AqjhU9R8RNcQ",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3914c16c-2152-4e10-880e-b3489138e5ee",
+                "name": "url_desc",
+                "value": "={{ $json.webViewLink }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -3328,
+          3856
+        ],
+        "id": "184ebf0b-42aa-4d0c-b5b8-c0ed7c7067e4",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "={{ $('Data Handler1').item.json.data.remoteJid }}",
+          "value": "={{ $json.url_desc }}"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -3152,
+          3856
+        ],
+        "id": "5c5da269-c2d3-4447-bb61-9d3ce4dcafe8",
+        "name": "Store Receipt Link",
+        "credentials": {
+          "redis": {
+            "id": "WCc2AqjhU9R8RNcQ",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "key": "={{ $json.identifier + ':receipt_link' }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -1904,
+          3760
+        ],
+        "id": "f5e0cb75-e38c-43b0-beaa-acb1f1024cdc",
+        "name": "Get Receipt Link",
+        "alwaysOutputData": true,
+        "credentials": {
+          "redis": {
+            "id": "WCc2AqjhU9R8RNcQ",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "204639b2-7c10-4fe4-af43-6ad8179d84e7",
+                "name": "Mensagemtratada",
+                "value": "={{ $json.Mensagemtratada || $json.text || $('Edit Fields4').item.json.Mensagemtratada || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "6541f5b8-d3cc-41b4-ac2a-1d60d4d542f6",
+                "name": "identifier",
+                "value": "={{ $json.identifier || $('Data Handler1').item.json.data.remoteJid }}",
+                "type": "string"
+              },
+              {
+                "id": "a736a82f-9666-4926-a9e8-9533728d4ea6",
+                "name": "link_comprovante",
+                "value": "={{ $json.link_comprovante || $json.propertyName || $json.value || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-exists-field",
+                "name": "contact_exists",
+                "value": "={{ $json.contact_exists !== undefined ? $json.contact_exists : $('Set Contact Data').item.json.contact_exists }}",
+                "type": "boolean"
+              },
+              {
+                "id": "contact-name-field",
+                "name": "contact_name",
+                "value": "={{ $json.contact_name || $('Set Contact Data').item.json.contact_name || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-email-field",
+                "name": "contact_email",
+                "value": "={{ $json.contact_email || $('Set Contact Data').item.json.contact_email || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-base-field",
+                "name": "contact_base",
+                "value": "={{ $json.contact_base || $('Set Contact Data').item.json.contact_base || '' }}",
+                "type": "string"
+              },
+              {
+                "id": "contact-phone-field",
+                "name": "contact_phone",
+                "value": "={{ $json.contact_phone || $('Set Contact Data').item.json.contact_phone || '' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -1664,
+          3760
+        ],
+        "id": "e0c67054-93f8-4f24-a09e-43b8b7f9e5c4",
+        "name": "Edit Fields5"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Data Handler1": {
+        "main": [
+          [
+            {
+              "node": "Get Contact",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Contact": {
+        "main": [
+          [
+            {
+              "node": "Set Contact Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Contact Data": {
+        "main": [
+          [
+            {
+              "node": "Check Contact Exists",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Contact Exists": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare First Time Flow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare First Time Flow": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Contact": {
+        "ai_tool": [
+          [
+            {
+              "node": "Secretária",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Image Memory": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Upload file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message Type1": {
+        "main": [
+          [
+            {
+              "node": "Text Memory1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields4": {
+        "main": [
+          [
+            {
+              "node": "Get Receipt Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Secretária": {
+        "main": [
+          [
+            {
+              "node": "Redis",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis": {
+        "main": [
+          [
+            {
+              "node": "Send Text",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Secretária",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Message Type1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Secretária",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Call 'My Sub-Workflow 1'": {
+        "ai_tool": [
+          [
+            {
+              "node": "Secretária",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Analyse Image": {
+        "main": [
+          [
+            {
+              "node": "Image Memory",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Data Handler1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Text Memory1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Store Receipt Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store Receipt Link": {
+        "main": [
+          [
+            {
+              "node": "Analyse Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Receipt Link": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields5": {
+        "main": [
+          [
+            {
+              "node": "Secretária",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "2537f6f949a524b5549473105e05026197c278752d28105c698c5d0d6b84b3f8"
+    }
+  }

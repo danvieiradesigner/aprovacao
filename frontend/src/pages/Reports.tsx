@@ -68,8 +68,36 @@ export default function Reports() {
 
       if (error) throw error;
 
+      const requestsWithContactNames = await Promise.all(
+        (data || []).map(async (request: any) => {
+          if (request.requester_phone) {
+            const phoneNumber = request.requester_phone.replace(/[^0-9]/g, '');
+            const { data: contact } = await supabase
+              .from('contacts')
+              .select('name')
+              .eq('phone_number', phoneNumber)
+              .maybeSingle();
+            
+            if (contact?.name && request.requester) {
+              request.requester.username = contact.name;
+            }
+          } else if (request.requester_email) {
+            const { data: contact } = await supabase
+              .from('contacts')
+              .select('name')
+              .ilike('email', request.requester_email.trim())
+              .maybeSingle();
+            
+            if (contact?.name && request.requester) {
+              request.requester.username = contact.name;
+            }
+          }
+          return request;
+        })
+      );
+
       // Filtrar por solicitante no cliente (já que é relacionamento)
-      let filtered = data || [];
+      let filtered = requestsWithContactNames;
       if (filters.requester) {
         filtered = filtered.filter((r: ApprovalRequest) =>
           r.requester?.username?.toLowerCase().includes(filters.requester.toLowerCase())
@@ -121,15 +149,15 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary mb-2">Relatórios</h1>
-          <p className="text-text-muted">Filtre e exporte solicitações</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">Relatórios</h1>
+          <p className="text-text-muted text-sm md:text-base">Filtre e exporte solicitações</p>
         </div>
         <button
           onClick={handleExport}
           disabled={requests.length === 0}
-          className="px-4 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed no-outline w-full sm:w-auto"
         >
           📥 Exportar Excel
         </button>

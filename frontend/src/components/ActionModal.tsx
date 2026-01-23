@@ -60,18 +60,18 @@ export default function ActionModal({ type, request, onClose, onConfirm }: Actio
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="glass rounded-2xl p-6 border border-border-neon w-full max-w-md"
+        className="glass rounded-2xl p-4 md:p-6 border border-border-neon w-full max-w-md my-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-text-primary">{currentConfig.title}</h2>
+          <h2 className="text-lg md:text-xl font-bold text-text-primary">{currentConfig.title}</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-dark-surface-alt text-text-muted hover:text-text-primary transition-colors"
+            className="p-2 rounded-xl hover:bg-dark-surface-alt text-text-muted hover:text-text-primary transition-colors no-outline"
           >
             <X size={20} />
           </button>
@@ -100,17 +100,17 @@ export default function ActionModal({ type, request, onClose, onConfirm }: Actio
             </div>
           )}
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <button
               type="submit"
-              className={`flex-1 py-2 rounded-xl ${currentConfig.buttonClass} text-text-primary font-semibold transition-all hover:neon-glow-sm`}
+              className={`flex-1 py-2 rounded-xl ${currentConfig.buttonClass} text-text-primary font-semibold transition-all hover:neon-glow-sm no-outline w-full sm:w-auto`}
             >
               {currentConfig.button}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all"
+              className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all no-outline w-full sm:w-auto"
             >
               Cancelar
             </button>

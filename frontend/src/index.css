@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Desabilitar outline padrão do navegador GLOBALMENTE */
+@layer base {
+  * {
+    outline: none !important;
+  }
+  
+  *:focus,
+  *:focus-visible,
+  *:active {
+    outline: none !important;
+  }
+}
+
 :root {
   --neon-primary: #C6F366;
   --bg-dark: #070A08;
@@ -17,6 +30,42 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Remover outline e bordas brancas de TODOS os elementos ao clicar */
+*:focus,
+*:focus-visible,
+*:active {
+  outline: none !important;
+}
+
+/* Específico para botões e links - remover completamente outline branco */
+button,
+a,
+[role="button"],
+[onclick],
+.cursor-pointer {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none;
+  user-select: none;
+  outline: none !important;
+}
+
+button:focus,
+button:focus-visible,
+button:active,
+button:focus:active,
+a:focus,
+a:focus-visible,
+a:active,
+a:focus:active,
+[role="button"]:focus,
+[role="button"]:focus-visible,
+[role="button"]:active {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
 }
 
 body {
@@ -153,5 +202,127 @@ td {
 [class*="border-purple"],
 [class*="border-orange"] {
   /* Manter cor original */
+}
+
+/* ============================================
+   REMOÇÃO TOTAL DE BORDAS BRANCAS E OUTLINES
+   ============================================ */
+
+/* Força máxima - remover TUDO de todos os elementos */
+*,
+*::before,
+*::after,
+*:focus,
+*:focus-visible,
+*:active,
+*:focus:active {
+  outline: 0 !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
+  tap-highlight-color: transparent !important;
+}
+
+/* Botões e links - desabilitar completamente visual feedback */
+button,
+a,
+[role="button"],
+[onclick] {
+  outline: 0 !important;
+  border: 0 !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Todos os estados de interação - NENHUM outline ou border */
+button:focus,
+button:focus-visible,
+button:active,
+button:hover,
+button:focus:active,
+a:focus,
+a:focus-visible,
+a:active,
+a:hover,
+a:focus:active,
+a:visited,
+a:visited:focus,
+a:visited:active {
+  outline: 0 !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Firefox específico */
+button::-moz-focus-inner,
+a::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0 !important;
+  outline: 0 !important;
+  padding: 0 !important;
+}
+
+/* Remover ring do Tailwind globalmente */
+* {
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-width: 0px !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-shadow: none !important;
+}
+
+/* Classe no-outline - força absoluta */
+.no-outline,
+.no-outline *,
+.no-outline:focus,
+.no-outline:active,
+.no-outline:focus-visible,
+.no-outline:hover,
+.no-outline:focus:active {
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* NavLink específico - zero bordas */
+a[class*="flex"],
+a[class*="rounded"],
+nav a,
+nav a:focus,
+nav a:active {
+  outline: 0 !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Tabelas */
+th,
+td,
+th:active,
+td:active,
+th:focus,
+td:focus {
+  outline: 0 !important;
+  box-shadow: none !important;
 }
 

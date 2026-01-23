@@ -72,3 +72,5 @@ sudo systemctl reload nginx
 echo -e "${GREEN}✅ Deploy concluído com sucesso!${NC}"
 echo -e "${GREEN}   Build disponível em: $FRONTEND_DIR/dist${NC}"
 
+
+

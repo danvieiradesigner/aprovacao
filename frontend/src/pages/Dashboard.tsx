@@ -92,13 +92,13 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary mb-2">Dashboard</h1>
-        <p className="text-text-muted">Visão geral do sistema</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">Dashboard</h1>
+        <p className="text-text-muted text-sm md:text-base">Visão geral do sistema</p>
       </div>
 
       {/* Cards de estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass rounded-3xl p-6 border border-border-neon">
+        <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 rounded-xl bg-yellow-500/10">
               <Clock className="text-yellow-400" size={24} />
@@ -113,7 +113,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="glass rounded-3xl p-6 border border-border-neon">
+        <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 rounded-xl bg-green-500/10">
               <CheckCircle className="text-green-400" size={24} />
@@ -128,7 +128,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="glass rounded-3xl p-6 border border-border-neon">
+        <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 rounded-xl bg-red-500/10">
               <XCircle className="text-red-400" size={24} />
@@ -143,7 +143,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="glass rounded-3xl p-6 border border-border-neon">
+        <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 rounded-xl bg-blue-500/10">
               <DollarSign className="text-blue-400" size={24} />
@@ -157,9 +157,9 @@ export default function Dashboard() {
       </div>
 
       {/* Gráficos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass rounded-3xl p-6 border border-border-neon">
-          <h3 className="text-lg font-semibold text-text-primary mb-4">Por Status</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
+          <h3 className="text-base md:text-lg font-semibold text-text-primary mb-4">Por Status</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -180,8 +180,8 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        <div className="glass rounded-3xl p-6 border border-border-neon">
-          <h3 className="text-lg font-semibold text-text-primary mb-4">Por Base (Top 5)</h3>
+        <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
+          <h3 className="text-base md:text-lg font-semibold text-text-primary mb-4">Por Base (Top 5)</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={stats?.byBase || []}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />

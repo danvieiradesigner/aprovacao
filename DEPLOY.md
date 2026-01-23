@@ -176,3 +176,5 @@ sudo systemctl reload nginx
 - `deploy.sh` - Script de deploy automático
 - `frontend/.env.example` - Exemplo de variáveis de ambiente
 
+
+

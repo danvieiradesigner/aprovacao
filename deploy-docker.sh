@@ -91,3 +91,5 @@ echo -e "${BLUE}   Container: aprovacao-frontend${NC}"
 echo -e "${BLUE}   Porta: 3000 (ou conforme configurado)${NC}"
 echo -e "${YELLOW}   Configure o proxy reverso no Nginx Proxy Manager se necessário.${NC}"
 
+
+

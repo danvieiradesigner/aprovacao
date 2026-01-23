@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase, ApprovalRequest } from '../services/supabase';
+import { supabase, ApprovalRequest, sendResponseWebhook } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import DataTable from '../components/DataTable';
@@ -34,8 +34,55 @@ export default function Pending() {
 
       if (error) throw error;
 
-      // RLS já filtra automaticamente, mas podemos garantir aqui também
-      setRequests(data || []);
+      const requestsWithContactNames = await Promise.all(
+        (data || []).map(async (request: any) => {
+          if (request.requester_phone) {
+            try {
+              const phoneNumber = request.requester_phone.replace(/[^0-9]/g, '');
+              const { data: contact, error: contactError } = await supabase
+                .from('contacts')
+                .select('name')
+                .eq('phone_number', phoneNumber)
+                .maybeSingle();
+              
+              if (!contactError && contact?.name) {
+                return {
+                  ...request,
+                  requester: {
+                    ...request.requester,
+                    username: contact.name
+                  }
+                };
+              }
+            } catch (err) {
+              console.error('Erro ao buscar contato:', err);
+            }
+          } else if (request.requester_email) {
+            try {
+              const { data: contact, error: contactError } = await supabase
+                .from('contacts')
+                .select('name')
+                .ilike('email', request.requester_email.trim())
+                .maybeSingle();
+              
+              if (!contactError && contact?.name) {
+                return {
+                  ...request,
+                  requester: {
+                    ...request.requester,
+                    username: contact.name
+                  }
+                };
+              }
+            } catch (err) {
+              console.error('Erro ao buscar contato:', err);
+            }
+          }
+          return request;
+        })
+      );
+
+      setRequests(requestsWithContactNames);
     } catch (error: any) {
       showToast('Erro ao carregar solicitações', 'error');
     } finally {
@@ -88,6 +135,24 @@ export default function Pending() {
 
       if (eventError) throw eventError;
 
+      // Enviar webhook para n8n se for aprovação ou rejeição
+      if (newStatus === 'APPROVED' || newStatus === 'REJECTED') {
+        console.log('[Pending] Disparando webhook para:', {
+          newStatus,
+          requestId,
+          idCode: actionModal.request.id_code,
+          phone: actionModal.request.requester_phone,
+          message,
+        });
+        await sendResponseWebhook(
+          newStatus as 'APPROVED' | 'REJECTED',
+          message || null,
+          requestId,
+          actionModal.request.id_code,
+          actionModal.request.requester_phone
+        );
+      }
+
       showToast('Ação realizada com sucesso!', 'success');
       setActionModal(null);
       fetchRequests();
@@ -118,6 +183,20 @@ export default function Pending() {
 
       if (eventError) throw eventError;
 
+      // Enviar webhook para n8n
+      console.log('[Pending] Disparando webhook para esclarecimento:', {
+        requestId: request.id,
+        idCode: request.id_code,
+        phone: request.requester_phone,
+      });
+      await sendResponseWebhook(
+        'NEEDS_INFO',
+        'Solicitação de esclarecimento',
+        request.id,
+        request.id_code,
+        request.requester_phone
+      );
+
       showToast('Status alterado para "Esclarecer"!', 'success');
       fetchRequests();
     } catch (error: any) {
@@ -131,8 +210,8 @@ export default function Pending() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary mb-2">Solicitações Pendentes</h1>
-        <p className="text-text-muted">Gerencie as solicitações aguardando aprovação</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">Solicitações Pendentes</h1>
+        <p className="text-text-muted text-sm md:text-base">Gerencie as solicitações aguardando aprovação</p>
       </div>
 
       <DataTable

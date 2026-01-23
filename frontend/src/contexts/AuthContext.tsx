@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true;
     let timeoutId: NodeJS.Timeout;
     let lastUserId: string | null = null;
+    let profileFetched = false; // Flag para evitar re-fetch desnecessário
 
     // Timeout de segurança para garantir que isLoading sempre seja false
     timeoutId = setTimeout(() => {
@@ -46,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       if (session) {
         lastUserId = session.user.id;
+        profileFetched = true;
         // Passar session para fetchUserProfile
         fetchUserProfile(session.user.id, session).finally(() => {
           if (mounted) {
@@ -72,17 +74,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
-      // Ignorar eventos TOKEN_REFRESHED se já temos o mesmo usuário
-      // Isso evita re-fetch quando a aba volta ao foco
-      if (session && session.user.id === lastUserId && event === 'TOKEN_REFRESHED') {
-        // Apenas atualizar a sessão, não re-fetch o perfil
-        setSession(session);
-        return;
+      const currentUserId = session?.user.id || null;
+      
+      // Ignorar completamente eventos TOKEN_REFRESHED e SIGNED_IN (quando já temos perfil)
+      // Isso evita re-fetch quando a aba volta ao foco ou token é renovado
+      if (event === 'TOKEN_REFRESHED' || (event === 'SIGNED_IN' && profileFetched && currentUserId === lastUserId)) {
+        if (session && currentUserId === lastUserId) {
+          // Apenas atualizar a sessão, não re-fetch o perfil
+          setSession(session);
+          return;
+        }
       }
       
       // Apenas processar se realmente mudou algo
-      const currentUserId = session?.user.id || null;
-      if (currentUserId === lastUserId && session && user) {
+      if (currentUserId === lastUserId && session && user && profileFetched) {
         // Mesmo usuário e já temos o perfil, apenas atualizar sessão se necessário
         setSession(session);
         return;
@@ -92,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       if (session) {
         lastUserId = session.user.id;
+        profileFetched = true;
         // Só buscar perfil se ainda não temos o user ou se mudou o usuário
         if (!user || user.id !== session.user.id) {
           await fetchUserProfile(session.user.id, session).finally(() => {
@@ -105,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } else {
         lastUserId = null;
+        profileFetched = false;
         clearTimeout(timeoutId);
         setUser(null);
         setIsLoading(false);

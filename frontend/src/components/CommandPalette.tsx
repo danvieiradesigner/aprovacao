@@ -69,7 +69,7 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center pt-32"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center pt-16 md:pt-32 p-4"
       onClick={onClose}
     >
       <div
@@ -88,7 +88,7 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
           />
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-dark-surface-alt text-text-muted hover:text-text-primary"
+            className="p-1 rounded-lg hover:bg-dark-surface-alt text-text-muted hover:text-text-primary no-outline"
           >
             <X size={20} />
           </button>
@@ -105,7 +105,7 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
                 <button
                   key={cmd.id}
                   onClick={() => handleSelect(cmd.path)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all no-outline ${
                     index === selectedIndex
                       ? 'bg-neon-primary/10 text-neon-primary'
                       : 'text-text-muted hover:bg-dark-surface-alt hover:text-text-primary'

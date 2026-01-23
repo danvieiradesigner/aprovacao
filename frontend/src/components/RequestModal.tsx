@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase, ApprovalRequest, RequestEvent } from '../services/supabase';
+import { supabase, ApprovalRequest, RequestEvent, sendResponseWebhook } from '../services/supabase';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
 import { X } from 'lucide-react';
@@ -55,8 +55,32 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
 
       if (eventsError) throw eventsError;
 
+      let requestWithContact = requestData;
+      if (requestData.requester_phone) {
+        const phoneNumber = requestData.requester_phone.replace(/[^0-9]/g, '');
+        const { data: contact } = await supabase
+          .from('contacts')
+          .select('name')
+          .eq('phone_number', phoneNumber)
+          .maybeSingle();
+        
+        if (contact?.name && requestWithContact.requester) {
+          requestWithContact.requester.username = contact.name;
+        }
+      } else if (requestData.requester_email) {
+        const { data: contact } = await supabase
+          .from('contacts')
+          .select('name')
+          .ilike('email', requestData.requester_email.trim())
+          .maybeSingle();
+        
+        if (contact?.name && requestWithContact.requester) {
+          requestWithContact.requester.username = contact.name;
+        }
+      }
+
       setRequest({
-        ...requestData,
+        ...requestWithContact,
         events: eventsData || [],
       } as RequestWithEvents);
       setNote(requestData.note || '');
@@ -134,6 +158,17 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
 
       if (eventError) throw eventError;
 
+      // Enviar webhook para n8n se for aprovação, rejeição ou esclarecimento
+      if (newStatus === 'APPROVED' || newStatus === 'REJECTED' || newStatus === 'NEEDS_INFO') {
+        await sendResponseWebhook(
+          newStatus as 'APPROVED' | 'REJECTED' | 'NEEDS_INFO',
+          `Status alterado para ${newStatus}`,
+          requestId,
+          request?.id_code || '',
+          request?.requester_phone
+        );
+      }
+
       showToast('Status atualizado com sucesso!', 'success');
       setShowStatusForm(false);
       setNewStatus('');
@@ -198,13 +233,13 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
       onClick={onClose}
     >
       <div
-        className="glass rounded-2xl p-6 border border-border-neon w-full max-w-3xl my-8"
+        className="glass rounded-2xl p-4 md:p-6 border border-border-neon w-full max-w-3xl my-4 md:my-8 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-text-primary">{request.id_code}</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-text-primary">{request.id_code}</h2>
               <p className="text-text-muted text-sm mt-1">{getStatusBadge(request.status)}</p>
             </div>
             {user?.role === 'ADMIN' && (
@@ -213,7 +248,7 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
                   setNewStatus(request.status);
                   setShowStatusForm(true);
                 }}
-                className="px-4 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all text-sm"
+                className="px-4 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all text-sm no-outline w-full sm:w-auto"
               >
                 Editar Status
               </button>
@@ -221,14 +256,14 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-dark-surface-alt text-text-muted hover:text-text-primary transition-colors"
+            className="p-2 rounded-xl hover:bg-dark-surface-alt text-text-muted hover:text-text-primary transition-colors no-outline self-end sm:self-auto"
           >
             <X size={24} />
           </button>
         </div>
 
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-4 md:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-text-muted">Base</label>
               <p className="text-text-primary mt-1">{request.base}</p>
@@ -272,16 +307,16 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
                       placeholder="Adicione uma observação..."
                     />
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <button
                       onClick={handleUpdateNote}
-                      className="px-6 py-2 rounded-xl bg-neon-primary text-dark-bg font-semibold btn-neon"
+                      className="px-6 py-2 rounded-xl bg-neon-primary text-dark-bg font-semibold btn-neon no-outline w-full sm:w-auto"
                     >
                       Atualizar
                     </button>
                     <button
                       onClick={() => setShowNoteForm(false)}
-                      className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt"
+                      className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt no-outline w-full sm:w-auto"
                     >
                       Cancelar
                     </button>
@@ -293,7 +328,7 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
                     <label className="text-sm font-medium text-text-muted">Observação</label>
                     <button
                       onClick={() => setShowNoteForm(true)}
-                      className="text-xs text-neon-primary hover:underline"
+                      className="text-xs text-neon-primary hover:underline no-outline"
                     >
                       Editar
                     </button>
@@ -333,10 +368,10 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
                     <option value="CANCELED">Cancelada</option>
                   </select>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     onClick={handleUpdateStatus}
-                    className="px-6 py-2 rounded-xl bg-neon-primary text-dark-bg font-semibold btn-neon"
+                    className="px-6 py-2 rounded-xl bg-neon-primary text-dark-bg font-semibold btn-neon no-outline w-full sm:w-auto"
                   >
                     Salvar
                   </button>
@@ -345,7 +380,7 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
                       setShowStatusForm(false);
                       setNewStatus('');
                     }}
-                    className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt"
+                    className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt no-outline w-full sm:w-auto"
                   >
                     Cancelar
                   </button>

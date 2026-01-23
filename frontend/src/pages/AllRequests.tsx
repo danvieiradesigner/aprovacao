@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase, ApprovalRequest } from '../services/supabase';
+import { supabase, ApprovalRequest, sendResponseWebhook } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import DataTable from '../components/DataTable';
@@ -37,7 +37,56 @@ export default function AllRequests() {
       const { data, error } = await query;
 
       if (error) throw error;
-      setRequests(data || []);
+      
+      const requestsWithContactNames = await Promise.all(
+        (data || []).map(async (request: any) => {
+          if (request.requester_phone) {
+            try {
+              const phoneNumber = request.requester_phone.replace(/[^0-9]/g, '');
+              const { data: contact, error: contactError } = await supabase
+                .from('contacts')
+                .select('name')
+                .eq('phone_number', phoneNumber)
+                .maybeSingle();
+              
+              if (!contactError && contact?.name) {
+                return {
+                  ...request,
+                  requester: {
+                    ...request.requester,
+                    username: contact.name
+                  }
+                };
+              }
+            } catch (err) {
+              console.error('Erro ao buscar contato:', err);
+            }
+          } else if (request.requester_email) {
+            try {
+              const { data: contact, error: contactError } = await supabase
+                .from('contacts')
+                .select('name')
+                .ilike('email', request.requester_email.trim())
+                .maybeSingle();
+              
+              if (!contactError && contact?.name) {
+                return {
+                  ...request,
+                  requester: {
+                    ...request.requester,
+                    username: contact.name
+                  }
+                };
+              }
+            } catch (err) {
+              console.error('Erro ao buscar contato:', err);
+            }
+          }
+          return request;
+        })
+      );
+      
+      setRequests(requestsWithContactNames);
     } catch (error: any) {
       showToast('Erro ao carregar solicitações', 'error');
     } finally {
@@ -49,6 +98,15 @@ export default function AllRequests() {
     if (!user) return;
 
     try {
+      // Buscar a solicitação para obter o id_code e requester_phone
+      const { data: requestData, error: fetchError } = await supabase
+        .from('approval_requests')
+        .select('id_code, requester_phone')
+        .eq('id', requestId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
       const { error: updateError } = await supabase
         .from('approval_requests')
         .update({ status: newStatus })
@@ -75,6 +133,17 @@ export default function AllRequests() {
         });
 
       if (eventError) throw eventError;
+
+      // Enviar webhook para n8n se for aprovação, rejeição ou esclarecimento
+      if (newStatus === 'APPROVED' || newStatus === 'REJECTED' || newStatus === 'NEEDS_INFO') {
+        await sendResponseWebhook(
+          newStatus as 'APPROVED' | 'REJECTED' | 'NEEDS_INFO',
+          `Status alterado para ${newStatus}`,
+          requestId,
+          requestData?.id_code || '',
+          requestData?.requester_phone
+        );
+      }
 
       showToast('Status atualizado com sucesso!', 'success');
       setEditingStatus(null);
@@ -118,12 +187,12 @@ export default function AllRequests() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-text-primary mb-2">Todas as Solicitações</h1>
-        <p className="text-text-muted">Visualize e gerencie todas as solicitações</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">Todas as Solicitações</h1>
+        <p className="text-text-muted text-sm md:text-base">Visualize e gerencie todas as solicitações</p>
       </div>
 
       {/* Filtros */}
-      <div className="glass rounded-3xl p-6 border border-border-neon">
+      <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">Status</label>
@@ -186,9 +255,9 @@ export default function AllRequests() {
         </div>
       </div>
 
-      {/* Tabela */}
+      {/* Tabela Desktop */}
       <div className="glass rounded-3xl border border-border-neon overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-dark-surface-alt border-b border-border-neon">
               <tr>
@@ -245,13 +314,13 @@ export default function AllRequests() {
                           </select>
                           <button
                             onClick={() => handleUpdateStatus(request.id, editingStatus.status)}
-                            className="px-2 py-1 rounded-lg bg-neon-primary text-dark-bg text-xs font-semibold hover:opacity-80 transition-opacity"
+                            className="px-2 py-1 rounded-lg bg-neon-primary text-dark-bg text-xs font-semibold hover:opacity-80 transition-opacity no-outline"
                           >
                             ✓
                           </button>
                           <button
                             onClick={() => setEditingStatus(null)}
-                            className="px-2 py-1 rounded-lg glass border border-border-neon text-text-primary text-xs hover:bg-dark-surface-alt transition-colors"
+                            className="px-2 py-1 rounded-lg glass border border-border-neon text-text-primary text-xs hover:bg-dark-surface-alt transition-colors no-outline"
                           >
                             ✕
                           </button>
@@ -267,7 +336,7 @@ export default function AllRequests() {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => setEditingStatus({ id: request.id, status: request.status })}
-                          className="p-2 rounded-lg glass border border-border-neon text-text-muted hover:text-text-primary hover:bg-dark-surface-alt transition-colors"
+                          className="p-2 rounded-lg glass border border-border-neon text-text-muted hover:text-text-primary hover:bg-dark-surface-alt transition-colors no-outline"
                           title="Editar status"
                         >
                           ✏️
@@ -279,6 +348,91 @@ export default function AllRequests() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Cards Mobile */}
+        <div className="md:hidden">
+          {loading ? (
+            <div className="px-4 py-12 text-center text-text-muted">Carregando...</div>
+          ) : filteredRequests.length === 0 ? (
+            <div className="px-4 py-12 text-center text-text-muted">Nenhuma solicitação encontrada</div>
+          ) : (
+            <div className="p-4 space-y-4">
+              {filteredRequests.map((request) => (
+                <div
+                  key={request.id}
+                  className="p-4 rounded-xl bg-dark-surface-alt border border-border-neon"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-neon-primary font-semibold text-lg mb-1">{request.id_code}</h3>
+                      <p className="text-text-muted text-xs mb-2">{request.base}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      {getStatusBadge(request.status)}
+                      {user?.role === 'ADMIN' && (
+                        <button
+                          onClick={() => setEditingStatus({ id: request.id, status: request.status })}
+                          className="p-2 rounded-lg glass border border-border-neon text-text-muted hover:text-text-primary hover:bg-dark-surface-alt transition-colors no-outline"
+                          title="Editar status"
+                        >
+                          ✏️
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-text-primary text-sm mb-3 line-clamp-2">{request.description}</p>
+
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-text-muted text-xs">Valor</p>
+                      <p className="text-neon-primary font-semibold">
+                        R$ {parseFloat(request.amount).toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-text-muted text-xs">Solicitante</p>
+                      <p className="text-text-primary text-sm">{request.requester?.username || '-'}</p>
+                    </div>
+                  </div>
+
+                  <p className="text-text-muted text-xs mb-3">
+                    {new Date(request.created_at).toLocaleString('pt-BR')}
+                  </p>
+
+                  {editingStatus?.id === request.id && (
+                    <div className="mt-3 pt-3 border-t border-border-neon">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={editingStatus.status}
+                          onChange={(e) => setEditingStatus({ ...editingStatus, status: e.target.value })}
+                          className="flex-1 px-3 py-2 rounded-lg bg-dark-surface border border-border-neon text-text-primary text-sm focus:outline-none focus:border-neon-primary"
+                          autoFocus
+                        >
+                          <option value="APPROVED">Aprovada</option>
+                          <option value="REJECTED">Rejeitada</option>
+                          <option value="NEEDS_INFO">Esclarecer</option>
+                        </select>
+                        <button
+                          onClick={() => handleUpdateStatus(request.id, editingStatus.status)}
+                          className="px-4 py-2 rounded-lg bg-neon-primary text-dark-bg text-sm font-semibold hover:opacity-80 transition-opacity no-outline"
+                        >
+                          ✓
+                        </button>
+                        <button
+                          onClick={() => setEditingStatus(null)}
+                          className="px-4 py-2 rounded-lg glass border border-border-neon text-text-primary text-sm hover:bg-dark-surface-alt transition-colors no-outline"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -26,23 +26,23 @@ export default function ReceiptModal({ receiptUrl, onClose }: ReceiptModalProps)
   const viewableUrl = getViewableUrl(receiptUrl);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="relative w-full h-full max-w-6xl max-h-[90vh] m-4 glass rounded-2xl border border-border-neon overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-border-neon">
-          <h2 className="text-xl font-bold text-text-primary">Comprovante</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 md:p-4">
+      <div className="relative w-full h-full max-w-6xl max-h-[95vh] md:max-h-[90vh] m-0 md:m-4 glass rounded-2xl border border-border-neon overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between p-3 md:p-4 border-b border-border-neon">
+          <h2 className="text-lg md:text-xl font-bold text-text-primary">Comprovante</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-dark-surface-alt text-text-muted hover:text-text-primary transition-colors"
+            className="p-2 rounded-lg hover:bg-dark-surface-alt text-text-muted hover:text-text-primary transition-colors no-outline"
           >
-            <X size={24} />
+            <X size={20} className="md:w-6 md:h-6" />
           </button>
         </div>
         
-        <div className="flex-1 overflow-auto p-4">
+        <div className="flex-1 overflow-auto p-2 md:p-4">
           <div className="w-full h-full flex items-center justify-center">
             <iframe
               src={viewableUrl}
-              className="w-full h-full min-h-[600px] border border-border-neon rounded-lg"
+              className="w-full h-full min-h-[400px] md:min-h-[600px] border border-border-neon rounded-lg"
               title="Comprovante"
               allow="fullscreen"
             />
@@ -53,7 +53,7 @@ export default function ReceiptModal({ receiptUrl, onClose }: ReceiptModalProps)
               href={receiptUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neon-primary hover:text-neon-secondary transition-colors underline"
+              className="text-neon-primary hover:text-neon-secondary transition-colors underline text-sm md:text-base"
             >
               Abrir em nova aba
             </a>

@@ -25,8 +25,18 @@ cd aprovacao
 cat > .env << EOF
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_ANON_KEY=sua-anon-key-aqui
+APROVACAO_PORT=3000
 EOF
 ```
+
+**⚠️ Importante:** Verifique se a porta 3000 está livre:
+```bash
+netstat -tulpn | grep 3000
+# ou
+ss -tulpn | grep 3000
+```
+
+Se estiver em uso, altere `APROVACAO_PORT=3001` (ou outra porta livre).
 
 ### 3. Build e Iniciar Container
 

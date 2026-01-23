@@ -102,7 +102,8 @@ export default function DataTable({ data, loading, onRowClick, onReceiptClick, a
         />
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Versão Desktop - Tabela */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-dark-surface-alt border-b border-border-neon">
             <tr>
@@ -198,7 +199,7 @@ export default function DataTable({ data, loading, onRowClick, onReceiptClick, a
                       {item.receipt_url ? (
                         <button
                           onClick={() => onReceiptClick(item)}
-                          className="px-3 py-1 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all"
+                          className="px-3 py-1 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all no-outline"
                         >
                           Ver Comprovante
                         </button>
@@ -214,7 +215,7 @@ export default function DataTable({ data, loading, onRowClick, onReceiptClick, a
                           <button
                             key={idx}
                             onClick={() => action.onClick(item)}
-                            className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${action.className || 'text-text-muted hover:bg-dark-surface-alt'}`}
+                            className={`px-3 py-1 rounded-lg text-xs font-medium transition-all no-outline ${action.className || 'text-text-muted hover:bg-dark-surface-alt'}`}
                           >
                             {action.label}
                           </button>
@@ -227,6 +228,74 @@ export default function DataTable({ data, loading, onRowClick, onReceiptClick, a
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Versão Mobile - Cards */}
+      <div className="md:hidden">
+        {sortedData.length === 0 ? (
+          <div className="px-4 py-12 text-center text-text-muted">
+            Nenhum registro encontrado
+          </div>
+        ) : (
+          <div className="p-4 space-y-4">
+            {sortedData.map((item) => (
+              <div
+                key={item.id}
+                className="p-4 rounded-xl bg-dark-surface-alt border border-border-neon cursor-pointer hover:bg-dark-surface transition-colors"
+                onClick={() => onRowClick?.(item)}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-neon-primary font-semibold text-lg">{item.id_code}</h3>
+                    <p className="text-text-muted text-xs mt-1">{item.base}</p>
+                  </div>
+                  {getStatusBadge(item.status)}
+                </div>
+                
+                <p className="text-text-primary text-sm mb-3 line-clamp-2">{item.description}</p>
+                
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-text-muted text-xs">Valor</p>
+                    <p className="text-neon-primary font-semibold">
+                      R$ {parseFloat(item.amount).toFixed(2)}
+                    </p>
+                  </div>
+                  {item.requester && (
+                    <div className="text-right">
+                      <p className="text-text-muted text-xs">Solicitante</p>
+                      <p className="text-text-primary text-sm">{item.requester.username}</p>
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-text-muted text-xs mb-3">
+                  {new Date(item.created_at).toLocaleString('pt-BR')}
+                </p>
+
+                <div className="flex gap-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
+                  {onReceiptClick && item.receipt_url && (
+                    <button
+                      onClick={() => onReceiptClick(item)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all no-outline"
+                    >
+                      Ver Comprovante
+                    </button>
+                  )}
+                  {actions && actions.map((action, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => action.onClick(item)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all no-outline ${action.className || 'bg-dark-surface text-text-primary hover:bg-dark-surface-alt'}`}
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -103,14 +103,14 @@ export default function Users() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary mb-2">Usuários</h1>
-          <p className="text-text-muted">Gerencie os usuários do sistema</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">Usuários</h1>
+          <p className="text-text-muted text-sm md:text-base">Gerencie os usuários do sistema</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-6 py-3 rounded-2xl bg-neon-primary text-dark-bg font-semibold btn-neon"
+          className="px-6 py-3 rounded-2xl bg-neon-primary text-dark-bg font-semibold btn-neon no-outline w-full sm:w-auto"
         >
           Novo Usuário
         </button>
@@ -222,14 +222,14 @@ export default function Users() {
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 py-2 rounded-xl bg-neon-primary text-dark-bg font-semibold btn-neon"
+                  className="flex-1 py-2 rounded-xl bg-neon-primary text-dark-bg font-semibold btn-neon no-outline"
                 >
                   Criar
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt"
+                  className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt no-outline"
                 >
                   Cancelar
                 </button>
