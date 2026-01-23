@@ -16,7 +16,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   };
 
   return (
-    <header className="h-16 bg-dark-surface border-b border-border-neon flex items-center justify-between px-4 md:px-6">
+    <header className="h-16 bg-dark-surface border-b border-border-neon flex items-center px-4 md:px-6">
       <button
         onClick={onMenuClick}
         className="md:hidden p-2 rounded-xl glass text-text-muted hover:text-neon-primary hover:bg-dark-surface-alt transition-all no-outline"
@@ -24,7 +24,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
       >
         <Menu size={20} />
       </button>
-      <div className="flex items-center gap-4">
+      <div className="flex-1 md:flex-none md:ml-auto flex items-center justify-end gap-4">
         <div className="text-right hidden sm:block">
           <p className="text-sm font-medium text-text-primary">{user?.username}</p>
           <p className="text-xs text-text-muted">{user?.role}</p>
