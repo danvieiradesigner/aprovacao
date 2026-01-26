@@ -135,9 +135,17 @@ export default function AllRequests() {
 
       // Enviar webhook para n8n se for aprovação, rejeição ou esclarecimento
       if (newStatus === 'APPROVED' || newStatus === 'REJECTED' || newStatus === 'NEEDS_INFO') {
+        console.log('[AllRequests] Disparando webhook para:', {
+          newStatus,
+          requestId,
+          idCode: requestData?.id_code,
+          phone: requestData?.requester_phone,
+          description: requestData?.description,
+          created_at: requestData?.created_at,
+        });
         await sendResponseWebhook(
           newStatus as 'APPROVED' | 'REJECTED' | 'NEEDS_INFO',
-          `Status alterado para ${newStatus}`,
+          null, // Não enviar mensagem técnica, o n8n já gera a mensagem amigável
           requestId,
           requestData?.id_code || '',
           requestData?.requester_phone,
