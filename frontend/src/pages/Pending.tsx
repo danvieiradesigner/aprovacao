@@ -29,7 +29,7 @@ export default function Pending() {
           requester:user_profiles!approval_requests_requester_id_fkey(id, username),
           approver:user_profiles!approval_requests_approver_id_fkey(id, username)
         `)
-        .in('status', ['PENDING', 'NEEDS_INFO'])
+        .eq('status', 'PENDING')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -107,6 +107,10 @@ export default function Pending() {
           newStatus = 'REJECTED';
           eventAction = 'REJECT';
           break;
+        case 'clarify':
+          newStatus = 'NEEDS_INFO';
+          eventAction = 'NEEDS_INFO';
+          break;
         case 'cancel':
           newStatus = 'CANCELED';
           eventAction = 'CANCEL';
@@ -135,8 +139,8 @@ export default function Pending() {
 
       if (eventError) throw eventError;
 
-      // Enviar webhook para n8n se for aprovação ou rejeição
-      if (newStatus === 'APPROVED' || newStatus === 'REJECTED') {
+      // Enviar webhook para n8n se for aprovação, rejeição ou esclarecimento
+      if (newStatus === 'APPROVED' || newStatus === 'REJECTED' || newStatus === 'NEEDS_INFO') {
         console.log('[Pending] Disparando webhook para:', {
           newStatus,
           requestId,
@@ -145,62 +149,29 @@ export default function Pending() {
           message,
         });
         await sendResponseWebhook(
-          newStatus as 'APPROVED' | 'REJECTED',
+          newStatus as 'APPROVED' | 'REJECTED' | 'NEEDS_INFO',
           message || null,
           requestId,
           actionModal.request.id_code,
-          actionModal.request.requester_phone
+          actionModal.request.requester_phone,
+          actionModal.request.description,
+          actionModal.request.created_at
         );
       }
 
-      showToast('Ação realizada com sucesso!', 'success');
+      // Remover a solicitação da lista imediatamente (feedback instantâneo)
+      setRequests((prevRequests) => prevRequests.filter((req) => req.id !== requestId));
+      
+      // Fechar modais
       setActionModal(null);
+      setSelectedRequest(null);
+
+      showToast('Ação realizada com sucesso!', 'success');
+      
+      // Recarregar lista para garantir sincronização
       fetchRequests();
     } catch (error: any) {
       showToast(error.message || 'Erro ao realizar ação', 'error');
-    }
-  };
-
-  const handleClarify = async (request: ApprovalRequest) => {
-    if (!user) return;
-
-    try {
-      const { error: updateError } = await supabase
-        .from('approval_requests')
-        .update({ status: 'NEEDS_INFO' })
-        .eq('id', request.id);
-
-      if (updateError) throw updateError;
-
-      const { error: eventError } = await supabase
-        .from('request_events')
-        .insert({
-          request_id: request.id,
-          actor_id: user.id,
-          action: 'NEEDS_INFO',
-          message: 'Solicitação de esclarecimento',
-        });
-
-      if (eventError) throw eventError;
-
-      // Enviar webhook para n8n
-      console.log('[Pending] Disparando webhook para esclarecimento:', {
-        requestId: request.id,
-        idCode: request.id_code,
-        phone: request.requester_phone,
-      });
-      await sendResponseWebhook(
-        'NEEDS_INFO',
-        'Solicitação de esclarecimento',
-        request.id,
-        request.id_code,
-        request.requester_phone
-      );
-
-      showToast('Status alterado para "Esclarecer"!', 'success');
-      fetchRequests();
-    } catch (error: any) {
-      showToast(error.message || 'Erro ao esclarecer solicitação', 'error');
     }
   };
 
@@ -233,7 +204,7 @@ export default function Pending() {
                 },
                 {
                   label: 'Esclarecer',
-                  onClick: (request) => handleClarify(request),
+                  onClick: (request) => setActionModal({ type: 'clarify', request }),
                   className: 'text-yellow-400 hover:bg-yellow-500/10',
                 },
                 {

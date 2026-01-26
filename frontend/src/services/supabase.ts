@@ -54,7 +54,9 @@ export async function sendResponseWebhook(
   description: string | null | undefined,
   requestId: string,
   idCode: string,
-  requesterPhone?: string | null
+  requesterPhone?: string | null,
+  purchaseDescription?: string | null,
+  purchaseDate?: string | null
 ): Promise<void> {
   try {
     console.log('[Webhook] Iniciando envio de webhook...', { status, requestId, idCode });
@@ -91,6 +93,8 @@ export async function sendResponseWebhook(
       request_id: requestId,
       id_code: idCode,
       telefone: cleanPhone || null,
+      purchase_description: purchaseDescription || null,
+      purchase_date: purchaseDate || null,
     };
 
     console.log('[Webhook] Payload:', payload);
@@ -141,4 +145,3 @@ export async function sendResponseWebhook(
     }
   }
 }
-

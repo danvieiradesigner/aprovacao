@@ -165,7 +165,9 @@ export default function RequestModal({ requestId, onClose, onUpdate }: RequestMo
           `Status alterado para ${newStatus}`,
           requestId,
           request?.id_code || '',
-          request?.requester_phone
+          request?.requester_phone,
+          request?.description || null,
+          request?.created_at || null
         );
       }
 

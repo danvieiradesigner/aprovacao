@@ -97,10 +97,10 @@ export default function AllRequests() {
     if (!user) return;
 
     try {
-      // Buscar a solicitação para obter o id_code e requester_phone
+      // Buscar a solicitação para obter o id_code, requester_phone, description e created_at
       const { data: requestData, error: fetchError } = await supabase
         .from('approval_requests')
-        .select('id_code, requester_phone')
+        .select('id_code, requester_phone, description, created_at')
         .eq('id', requestId)
         .single();
 
@@ -140,7 +140,9 @@ export default function AllRequests() {
           `Status alterado para ${newStatus}`,
           requestId,
           requestData?.id_code || '',
-          requestData?.requester_phone
+          requestData?.requester_phone,
+          requestData?.description || null,
+          requestData?.created_at || null
         );
       }
 

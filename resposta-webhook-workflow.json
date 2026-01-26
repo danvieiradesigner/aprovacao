@@ -59,6 +59,18 @@
               "name": "id_code",
               "value": "={{ $json.body.id_code }}",
               "type": "string"
+            },
+            {
+              "id": "purchase_description",
+              "name": "purchase_description",
+              "value": "={{ $json.body.purchase_description }}",
+              "type": "string"
+            },
+            {
+              "id": "purchase_date",
+              "name": "purchase_date",
+              "value": "={{ $json.body.purchase_date }}",
+              "type": "string"
             }
           ]
         },
@@ -85,7 +97,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ {\n  number: $('Data Handler1').item.json.telefone.replace(/[^0-9]/g, ''),\n  text: (\n    $('Data Handler1').item.json.status === 'aprovar' \n      ? '✅ Aprovado' \n      : $('Data Handler1').item.json.status === 'rejeitar' \n      ? '❌ Rejeitado' \n      : '⚠️ Solicitação de Esclarecimento'\n  ) + ($('Data Handler1').item.json.descricao && $('Data Handler1').item.json.descricao.trim() !== '' ? '\\n\\n' + $('Data Handler1').item.json.descricao : ''),\n  options: { delay: 2000, presence: \"composing\" }\n} }}",
+        "jsonBody": "={{ (() => {\n  const status = $('Data Handler1').item.json.status;\n  const descricao = $('Data Handler1').item.json.descricao || '';\n  const purchaseDescription = $('Data Handler1').item.json.purchase_description || '';\n  const purchaseDate = $('Data Handler1').item.json.purchase_date || '';\n  \n  // Formatar data: DD-MM às HHhrs\n  let formattedDate = '';\n  if (purchaseDate) {\n    try {\n      const date = new Date(purchaseDate);\n      const day = String(date.getDate()).padStart(2, '0');\n      const month = String(date.getMonth() + 1).padStart(2, '0');\n      const hours = String(date.getHours()).padStart(2, '0');\n      formattedDate = `${day}-${month} às ${hours}hrs`;\n    } catch (e) {\n      formattedDate = '';\n    }\n  }\n  \n  // Montar mensagem de status\n  let statusMessage = '';\n  if (status === 'aprovar') {\n    statusMessage = '✅ Aprovado';\n  } else if (status === 'rejeitar') {\n    statusMessage = '❌ Rejeitado';\n  } else {\n    statusMessage = '⚠️ Solicitação de Esclarecimento';\n  }\n  \n  // Montar mensagem completa\n  let fullMessage = statusMessage;\n  \n  // Adicionar informações da compra se disponíveis\n  if (formattedDate && purchaseDescription) {\n    fullMessage += '\\n\\nRegistro feito em ' + formattedDate + ' \"' + purchaseDescription + '\"';\n  } else if (formattedDate) {\n    fullMessage += '\\n\\nRegistro feito em ' + formattedDate;\n  } else if (purchaseDescription) {\n    fullMessage += '\\n\\n\"' + purchaseDescription + '\"';\n  }\n  \n  // Adicionar descrição adicional se houver\n  if (descricao && descricao.trim() !== '') {\n    fullMessage += '\\n\\n' + descricao;\n  }\n  \n  return {\n    number: $('Data Handler1').item.json.telefone.replace(/[^0-9]/g, ''),\n    text: fullMessage,\n    options: { delay: 2000, presence: \"composing\" }\n  };\n})() }}",
         "options": {
           "redirect": {
             "redirect": {}

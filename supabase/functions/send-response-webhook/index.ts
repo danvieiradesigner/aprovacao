@@ -12,6 +12,8 @@ interface ResponseWebhookPayload {
   request_id: string;
   id_code: string;
   telefone: string | null;
+  purchase_description?: string | null;
+  purchase_date?: string | null;
 }
 
 serve(async (req) => {
