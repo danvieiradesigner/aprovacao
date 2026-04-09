@@ -79,12 +79,6 @@ export default function Login() {
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
-
-        <div className="mt-6 p-4 rounded-xl bg-bg-input border border-border">
-          <p className="text-xs text-text-muted text-center">
-            Use seu email e senha do Supabase Auth
-          </p>
-        </div>
       </div>
     </div>
   );
