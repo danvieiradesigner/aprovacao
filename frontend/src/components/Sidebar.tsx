@@ -9,8 +9,7 @@ import {
   Users,
   List,
   X,
-  LogOut,
-  ChevronRight
+  LogOut
 } from 'lucide-react';
 
 const menuItems = [
