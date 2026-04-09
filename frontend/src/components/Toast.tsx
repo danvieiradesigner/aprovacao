@@ -5,8 +5,8 @@ interface ToastProps {
 
 export default function Toast({ message, type }: ToastProps) {
   const colors = {
-    success: 'bg-green-500/20 border-green-500/50 text-green-400',
-    error: 'bg-red-500/20 border-red-500/50 text-red-400',
+    success: 'bg-success/20 border-green-500/50 text-success',
+    error: 'bg-danger/20 border-red-500/50 text-danger',
     info: 'bg-blue-500/20 border-blue-500/50 text-blue-400',
   };
 

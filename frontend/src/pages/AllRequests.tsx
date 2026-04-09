@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase, ApprovalRequest, sendResponseWebhook } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import Select from '../components/Select';
 
 export default function AllRequests() {
   const { user } = useAuth();
@@ -173,10 +174,10 @@ export default function AllRequests() {
 
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
-      PENDING: 'bg-yellow-500/20 text-yellow-400',
+      PENDING: 'bg-warning/20 text-warning',
       NEEDS_INFO: 'bg-orange-500/20 text-orange-400',
-      APPROVED: 'bg-green-500/20 text-green-400',
-      REJECTED: 'bg-red-500/20 text-red-400',
+      APPROVED: 'bg-success/20 text-success',
+      REJECTED: 'bg-danger/20 text-danger',
       CANCELED: 'bg-text-muted/20 text-text-muted',
     };
     const labels: Record<string, string> = {
@@ -201,22 +202,22 @@ export default function AllRequests() {
       </div>
 
       {/* Filtros */}
-      <div className="glass rounded-3xl p-4 md:p-6 border border-border-neon">
+      <div className="glass rounded-3xl p-4 md:p-6 border border-border relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">Status</label>
-            <select
+            <Select
               value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
-            >
-              <option value="">Todos</option>
-              <option value="PENDING">Pendente</option>
-              <option value="NEEDS_INFO">Esclarecer</option>
-              <option value="APPROVED">Aprovada</option>
-              <option value="REJECTED">Rejeitada</option>
-              <option value="CANCELED">Cancelada</option>
-            </select>
+              onChange={(value) => setFilters({ ...filters, status: value })}
+              options={[
+                { value: '', label: 'Todos' },
+                { value: 'PENDING', label: 'Pendente' },
+                { value: 'NEEDS_INFO', label: 'Esclarecer' },
+                { value: 'APPROVED', label: 'Aprovada' },
+                { value: 'REJECTED', label: 'Rejeitada' },
+                { value: 'CANCELED', label: 'Cancelada' },
+              ]}
+            />
           </div>
 
           <div>
@@ -226,7 +227,7 @@ export default function AllRequests() {
               value={filters.base}
               onChange={(e) => setFilters({ ...filters, base: e.target.value })}
               placeholder="Filtrar por base..."
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary"
+              className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary"
             />
           </div>
 
@@ -237,7 +238,7 @@ export default function AllRequests() {
               value={filters.requester}
               onChange={(e) => setFilters({ ...filters, requester: e.target.value })}
               placeholder="Filtrar por solicitante..."
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary"
+              className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary"
             />
           </div>
 
@@ -248,7 +249,7 @@ export default function AllRequests() {
                 type="date"
                 value={filters.dateFrom}
                 onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
+                className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary focus:outline-none focus:border-brand-primary"
               />
             </div>
             <div>
@@ -257,7 +258,7 @@ export default function AllRequests() {
                 type="date"
                 value={filters.dateTo}
                 onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
+                className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary focus:outline-none focus:border-brand-primary"
               />
             </div>
           </div>
@@ -265,20 +266,20 @@ export default function AllRequests() {
       </div>
 
       {/* Tabela Desktop */}
-      <div className="glass rounded-3xl border border-border-neon overflow-hidden">
+      <div className="glass rounded-3xl border border-border overflow-hidden relative z-0">
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-dark-surface-alt border-b border-border-neon">
+            <thead className="bg-bg-input border-b border-border">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Código</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Base</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Descrição</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Valor</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Solicitante</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Criado em</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Código</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Base</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Descrição</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Valor</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Solicitante</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Criado em</th>
                 {user?.role === 'ADMIN' && (
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Ações</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Ações</th>
                 )}
               </tr>
             </thead>
@@ -299,37 +300,37 @@ export default function AllRequests() {
                 filteredRequests.map((request) => (
                   <tr
                     key={request.id}
-                    className="border-b border-border-neon hover:bg-dark-surface-alt transition-colors"
+                    className="border-b border-border hover:bg-bg-input transition-colors"
                   >
-                    <td className="px-6 py-4 text-neon-primary font-medium">{request.id_code}</td>
-                    <td className="px-6 py-4 text-text-primary">{request.base}</td>
-                    <td className="px-6 py-4 text-text-primary max-w-md truncate">{request.description}</td>
-                    <td className="px-6 py-4 text-text-primary">
+                    <td className="px-6 py-5 text-sm text-brand font-medium">{request.id_code}</td>
+                    <td className="px-6 py-5 text-sm text-text-primary">{request.base}</td>
+                    <td className="px-6 py-5 text-sm text-text-primary max-w-md truncate">{request.description}</td>
+                    <td className="px-6 py-5 text-sm text-text-primary">
                       R$ {parseFloat(request.amount).toFixed(2)}
                     </td>
-                    <td className="px-6 py-4 text-text-primary">{request.requester?.username || '-'}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-5 text-sm text-text-primary">{request.requester?.username || '-'}</td>
+                    <td className="px-6 py-5 text-sm">
                       {editingStatus?.id === request.id ? (
                         <div className="flex items-center gap-2">
-                          <select
+                          <Select
                             value={editingStatus.status}
-                            onChange={(e) => setEditingStatus({ ...editingStatus, status: e.target.value })}
-                            className="px-3 py-1 rounded-lg bg-dark-surface border border-border-neon text-text-primary text-xs focus:outline-none focus:border-neon-primary"
-                            autoFocus
-                          >
-                            <option value="APPROVED">Aprovada</option>
-                            <option value="REJECTED">Rejeitada</option>
-                            <option value="NEEDS_INFO">Esclarecer</option>
-                          </select>
+                            onChange={(value) => setEditingStatus({ ...editingStatus, status: value })}
+                            className="w-36"
+                            options={[
+                              { value: 'APPROVED', label: 'Aprovada' },
+                              { value: 'REJECTED', label: 'Rejeitada' },
+                              { value: 'NEEDS_INFO', label: 'Esclarecer' },
+                            ]}
+                          />
                           <button
                             onClick={() => handleUpdateStatus(request.id, editingStatus.status)}
-                            className="px-2 py-1 rounded-lg bg-neon-primary text-dark-bg text-xs font-semibold hover:opacity-80 transition-opacity no-outline"
+                            className="px-2 py-1 rounded-lg bg-brand text-bg text-xs font-semibold hover:opacity-80 transition-opacity no-outline"
                           >
                             ✓
                           </button>
                           <button
                             onClick={() => setEditingStatus(null)}
-                            className="px-2 py-1 rounded-lg glass border border-border-neon text-text-primary text-xs hover:bg-dark-surface-alt transition-colors no-outline"
+                            className="px-2 py-1 rounded-lg glass border border-border text-text-primary text-xs hover:bg-bg-input transition-colors no-outline"
                           >
                             ✕
                           </button>
@@ -338,14 +339,14 @@ export default function AllRequests() {
                         getStatusBadge(request.status)
                       )}
                     </td>
-                    <td className="px-6 py-4 text-text-muted text-sm">
+                    <td className="px-6 py-5 text-sm text-text-muted">
                       {new Date(request.created_at).toLocaleString('pt-BR')}
                     </td>
                     {user?.role === 'ADMIN' && (
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5 text-sm">
                         <button
                           onClick={() => setEditingStatus({ id: request.id, status: request.status })}
-                          className="p-2 rounded-lg glass border border-border-neon text-text-muted hover:text-text-primary hover:bg-dark-surface-alt transition-colors no-outline"
+                          className="p-2 rounded-lg glass border border-border text-text-muted hover:text-text-primary hover:bg-bg-input transition-colors no-outline"
                           title="Editar status"
                         >
                           ✏️
@@ -370,11 +371,11 @@ export default function AllRequests() {
               {filteredRequests.map((request) => (
                 <div
                   key={request.id}
-                  className="p-4 rounded-xl bg-dark-surface-alt border border-border-neon"
+                  className="p-4 rounded-xl bg-bg-input border border-border"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-neon-primary font-semibold text-lg mb-1">{request.id_code}</h3>
+                      <h3 className="text-brand font-semibold text-lg mb-1">{request.id_code}</h3>
                       <p className="text-text-muted text-xs mb-2">{request.base}</p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
@@ -382,7 +383,7 @@ export default function AllRequests() {
                       {user?.role === 'ADMIN' && (
                         <button
                           onClick={() => setEditingStatus({ id: request.id, status: request.status })}
-                          className="p-2 rounded-lg glass border border-border-neon text-text-muted hover:text-text-primary hover:bg-dark-surface-alt transition-colors no-outline"
+                          className="p-2 rounded-lg glass border border-border text-text-muted hover:text-text-primary hover:bg-bg-input transition-colors no-outline"
                           title="Editar status"
                         >
                           ✏️
@@ -396,7 +397,7 @@ export default function AllRequests() {
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <p className="text-text-muted text-xs">Valor</p>
-                      <p className="text-neon-primary font-semibold">
+                      <p className="text-brand font-semibold">
                         R$ {parseFloat(request.amount).toFixed(2)}
                       </p>
                     </div>
@@ -411,27 +412,28 @@ export default function AllRequests() {
                   </p>
 
                   {editingStatus?.id === request.id && (
-                    <div className="mt-3 pt-3 border-t border-border-neon">
+                    <div className="mt-3 pt-3 border-t border-border">
                       <div className="flex items-center gap-2">
-                        <select
-                          value={editingStatus.status}
-                          onChange={(e) => setEditingStatus({ ...editingStatus, status: e.target.value })}
-                          className="flex-1 px-3 py-2 rounded-lg bg-dark-surface border border-border-neon text-text-primary text-sm focus:outline-none focus:border-neon-primary"
-                          autoFocus
-                        >
-                          <option value="APPROVED">Aprovada</option>
-                          <option value="REJECTED">Rejeitada</option>
-                          <option value="NEEDS_INFO">Esclarecer</option>
-                        </select>
+                        <div className="flex-1">
+                          <Select
+                            value={editingStatus.status}
+                            onChange={(value) => setEditingStatus({ ...editingStatus, status: value })}
+                            options={[
+                              { value: 'APPROVED', label: 'Aprovada' },
+                              { value: 'REJECTED', label: 'Rejeitada' },
+                              { value: 'NEEDS_INFO', label: 'Esclarecer' },
+                            ]}
+                          />
+                        </div>
                         <button
                           onClick={() => handleUpdateStatus(request.id, editingStatus.status)}
-                          className="px-4 py-2 rounded-lg bg-neon-primary text-dark-bg text-sm font-semibold hover:opacity-80 transition-opacity no-outline"
+                          className="px-4 py-2 rounded-lg bg-brand text-bg text-sm font-semibold hover:opacity-80 transition-opacity no-outline"
                         >
                           ✓
                         </button>
                         <button
                           onClick={() => setEditingStatus(null)}
-                          className="px-4 py-2 rounded-lg glass border border-border-neon text-text-primary text-sm hover:bg-dark-surface-alt transition-colors no-outline"
+                          className="px-4 py-2 rounded-lg glass border border-border text-text-primary text-sm hover:bg-bg-input transition-colors no-outline"
                         >
                           ✕
                         </button>

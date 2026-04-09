@@ -73,10 +73,10 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
       onClick={onClose}
     >
       <div
-        className="glass rounded-2xl w-full max-w-2xl p-2 border border-border-neon"
+        className="glass rounded-2xl w-full max-w-2xl p-2 border border-border"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-neon">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
           <input
             ref={inputRef}
             type="text"
@@ -88,7 +88,7 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
           />
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-dark-surface-alt text-text-muted hover:text-text-primary no-outline"
+            className="p-1 rounded-lg hover:bg-bg-input text-text-muted hover:text-text-primary no-outline"
           >
             <X size={20} />
           </button>
@@ -107,8 +107,8 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
                   onClick={() => handleSelect(cmd.path)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all no-outline ${
                     index === selectedIndex
-                      ? 'bg-neon-primary/10 text-neon-primary'
-                      : 'text-text-muted hover:bg-dark-surface-alt hover:text-text-primary'
+                      ? 'bg-brand/10 text-brand'
+                      : 'text-text-muted hover:bg-bg-input hover:text-text-primary'
                   }`}
                 >
                   <Icon size={20} />

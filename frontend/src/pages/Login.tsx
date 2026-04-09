@@ -34,10 +34,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
-      <div className="glass rounded-3xl p-6 md:p-8 w-full max-w-md border border-border-neon">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+      <div className="glass rounded-3xl p-6 md:p-8 w-full max-w-md border border-border">
         <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-neon-primary mb-2">Alçada</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand mb-2">Alçada</h1>
           <p className="text-text-muted text-sm md:text-base">Controle de Aprovação</p>
         </div>
 
@@ -50,7 +50,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary focus:neon-glow-sm transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary focus:brand-glow-sm transition-all"
               placeholder="admin@exemplo.com"
               required
               autoFocus
@@ -65,7 +65,7 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary focus:neon-glow-sm transition-all"
+              className="w-full px-4 py-3 rounded-2xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary focus:brand-glow-sm transition-all"
               placeholder="••••••••"
               required
             />
@@ -74,13 +74,13 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-2xl bg-neon-primary text-dark-bg font-semibold btn-neon disabled:opacity-50 disabled:cursor-not-allowed no-outline"
+            className="w-full py-3 rounded-2xl bg-brand text-bg font-semibold brand-glow shadow-brand disabled:opacity-50 disabled:cursor-not-allowed no-outline"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 
-        <div className="mt-6 p-4 rounded-xl bg-dark-surface-alt border border-border-neon">
+        <div className="mt-6 p-4 rounded-xl bg-bg-input border border-border">
           <p className="text-xs text-text-muted text-center">
             Use seu email e senha do Supabase Auth
           </p>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase, UserProfile } from '../services/supabase';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
+import Select from '../components/Select';
 
 export default function Users() {
   const { user: currentUser } = useAuth();
@@ -110,42 +111,42 @@ export default function Users() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-6 py-3 rounded-2xl bg-neon-primary text-dark-bg font-semibold btn-neon no-outline w-full sm:w-auto"
+          className="px-6 py-3 rounded-2xl bg-brand text-bg font-semibold brand-glow shadow-brand no-outline w-full sm:w-auto"
         >
           Novo Usuário
         </button>
       </div>
 
-      <div className="glass rounded-2xl border border-border-neon overflow-hidden">
+      <div className="glass rounded-2xl border border-border overflow-hidden">
         <table className="w-full">
-          <thead className="bg-dark-surface-alt border-b border-border-neon">
+          <thead className="bg-bg-input border-b border-border">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Usuário</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Role</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Criado em</th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Usuário</th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Role</th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Criado em</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
               <tr
                 key={user.id}
-                className="border-b border-border-neon hover:bg-dark-surface-alt transition-colors"
+                className="border-b border-border hover:bg-bg-input transition-colors"
               >
-                <td className="px-6 py-4 text-text-primary">{user.username}</td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-5 text-sm text-text-primary">{user.username}</td>
+                <td className="px-6 py-5 text-sm">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
                       user.role === 'ADMIN'
-                        ? 'bg-red-500/20 text-red-400'
+                        ? 'bg-danger/20 text-danger'
                         : user.role === 'APPROVER'
                         ? 'bg-blue-500/20 text-blue-400'
-                        : 'bg-green-500/20 text-green-400'
+                        : 'bg-success/20 text-success'
                     }`}
                   >
                     {user.role}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-text-muted text-sm">
+                <td className="px-6 py-5 text-sm text-text-muted">
                   {new Date(user.created_at).toLocaleString('pt-BR')}
                 </td>
               </tr>
@@ -160,7 +161,7 @@ export default function Users() {
           onClick={() => setShowModal(false)}
         >
           <div
-            className="glass rounded-2xl p-6 border border-border-neon w-full max-w-md"
+            className="glass rounded-2xl p-6 border border-border w-full max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-bold text-text-primary mb-4">Novo Usuário</h2>
@@ -174,7 +175,7 @@ export default function Users() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
+                  className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary focus:outline-none focus:border-brand-primary"
                 />
               </div>
               <div>
@@ -187,7 +188,7 @@ export default function Users() {
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   required
                   minLength={3}
-                  className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
+                  className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary focus:outline-none focus:border-brand-primary"
                 />
               </div>
               <div>
@@ -200,36 +201,36 @@ export default function Users() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                   minLength={6}
-                  className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
+                  className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary focus:outline-none focus:border-brand-primary"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-2">
                   Role
                 </label>
-                <select
+                <Select
                   value={formData.role}
-                  onChange={(e) =>
-                    setFormData({ ...formData, role: e.target.value as any })
+                  onChange={(val) =>
+                    setFormData({ ...formData, role: val as any })
                   }
-                  className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
-                >
-                  <option value="REQUESTER">REQUESTER</option>
-                  <option value="APPROVER">APPROVER</option>
-                  <option value="ADMIN">ADMIN</option>
-                </select>
+                  options={[
+                    { value: 'REQUESTER', label: 'REQUESTER' },
+                    { value: 'APPROVER', label: 'APPROVER' },
+                    { value: 'ADMIN', label: 'ADMIN' },
+                  ]}
+                />
               </div>
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 py-2 rounded-xl bg-neon-primary text-dark-bg font-semibold btn-neon no-outline"
+                  className="flex-1 py-2 rounded-xl bg-brand text-bg font-semibold brand-glow shadow-brand no-outline"
                 >
                   Criar
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt no-outline"
+                  className="px-6 py-2 rounded-xl glass border border-border text-text-primary hover:bg-bg-input no-outline"
                 >
                   Cancelar
                 </button>

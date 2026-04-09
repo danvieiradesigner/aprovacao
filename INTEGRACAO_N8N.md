@@ -38,17 +38,24 @@ Content-Type: application/json
 
 ```json
 {
-  "id_code": "REQ-2024-0001",  // Opcional - será gerado automaticamente se não fornecido
-  "requester_id": "uuid-do-requester",  // Opcional se fornecer requester_email
-  "requester_email": "usuario@exemplo.com",  // Opcional se fornecer requester_id
-  "approver_id": "uuid-do-approver",  // Opcional
-  "approver_email": "aprovador@exemplo.com",  // Opcional
+  "id_code": "REQ-2024-0001",
+  "requester_id": "uuid-do-requester",
+  "requester_email": "usuario@exemplo.com",
+  "approver_id": "uuid-do-approver",
+  "approver_email": "aprovador@exemplo.com",
   "base": "SP",
   "description": "Despesa de viagem",
   "amount": 1500.50,
-  "note": "Observações adicionais",  // Opcional
-  "receipt_url": "https://drive.google.com/file/d/123456789/view",  // Opcional - URL do comprovante no Google Drive
-  "status": "PENDING"  // Opcional - padrão é PENDING
+  "note": "Observações adicionais",
+  "receipt_url": "https://drive.google.com/file/d/123456789/view",
+  "status": "PENDING",
+  "data_entrada": "2024-01-15",
+  "fornecedor": "Fornecedor XYZ",
+  "nf": "123456",
+  "forma_pagamento": "PIX",
+  "data_vencimento_boleto": "2024-01-20",
+  "base_centro_custo": "SP - Administrativo",
+  "numero_referencia": "REF-001"
 }
 ```
 
@@ -64,6 +71,13 @@ Content-Type: application/json
 - `note`: Observações
 - `receipt_url`: URL do comprovante no Google Drive
 - `status`: Status inicial (padrão: PENDING)
+- `data_entrada`: Data da compra/despesa (YYYY-MM-DD)
+- `fornecedor`: Nome do fornecedor
+- `nf`: Número da Nota Fiscal
+- `forma_pagamento`: PIX, Boleto, etc
+- `data_vencimento_boleto`: Data de vencimento do boleto (YYYY-MM-DD)
+- `base_centro_custo`: Base de Pagamento / Centro de Custo
+- `numero_referencia`: Nº de Referência do app de orçamento
 
 **Resposta de Sucesso**:
 

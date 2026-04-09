@@ -19,6 +19,15 @@ interface N8nWebhookPayload {
   note?: string;
   receipt_url?: string;
   status?: 'PENDING' | 'NEEDS_INFO' | 'APPROVED' | 'REJECTED' | 'CANCELED';
+  // Novos campos do fluxo de despesas
+  data_entrada?: string; // YYYY-MM-DD
+  fornecedor?: string;
+  nf?: string;
+  forma_pagamento?: string;
+  data_vencimento_boleto?: string; // YYYY-MM-DD
+  base_centro_custo?: string;
+  numero_referencia?: string;
+  codigo?: string;
 }
 
 async function generateIdCode(supabaseAdmin: any): Promise<string> {
@@ -177,21 +186,32 @@ serve(async (req) => {
       requesterPhone = requesterPhone.replace(/[^0-9]/g, '');
     }
 
+    const insertData: Record<string, unknown> = {
+      id_code: idCode,
+      requester_id: requesterId,
+      approver_id: approverId,
+      base: payload.base,
+      description: payload.description,
+      amount: payload.amount.toString(),
+      note: payload.note || null,
+      receipt_url: payload.receipt_url || null,
+      status: status,
+      requester_email: payload.requester_email || null,
+      requester_phone: requesterPhone || null,
+    };
+
+    if (payload.data_entrada) insertData.data_entrada = payload.data_entrada;
+    if (payload.fornecedor) insertData.fornecedor = payload.fornecedor;
+    if (payload.nf) insertData.nf = payload.nf;
+    if (payload.forma_pagamento) insertData.forma_pagamento = payload.forma_pagamento;
+    if (payload.data_vencimento_boleto) insertData.data_vencimento_boleto = payload.data_vencimento_boleto;
+    if (payload.base_centro_custo) insertData.base_centro_custo = payload.base_centro_custo;
+    if (payload.numero_referencia) insertData.numero_referencia = payload.numero_referencia;
+    if (payload.codigo) insertData.numero_referencia = payload.codigo;
+
     const { data: request, error: insertError } = await supabaseAdmin
       .from('approval_requests')
-      .insert({
-        id_code: idCode,
-        requester_id: requesterId,
-        approver_id: approverId,
-        base: payload.base,
-        description: payload.description,
-        amount: payload.amount.toString(),
-        note: payload.note || null,
-        receipt_url: payload.receipt_url || null,
-        status: status,
-        requester_email: payload.requester_email || null,
-        requester_phone: requesterPhone || null,
-      })
+      .insert(insertData)
       .select()
       .single();
 
@@ -225,6 +245,15 @@ serve(async (req) => {
           note: request.note,
           receipt_url: request.receipt_url,
           status: request.status,
+          data_entrada: request.data_entrada,
+          fornecedor: request.fornecedor,
+          nf: request.nf,
+          forma_pagamento: request.forma_pagamento,
+          data_vencimento_boleto: request.data_vencimento_boleto,
+          base_centro_custo: request.base_centro_custo,
+          numero_referencia: request.numero_referencia,
+          codigo: request.numero_referencia,
+          data_pagamento: request.data_pagamento,
           created_at: request.created_at,
           updated_at: request.updated_at,
         },

@@ -71,9 +71,9 @@ export default function History() {
   const getActionColor = (action: string) => {
     const colors: Record<string, string> = {
       CREATE: 'bg-blue-500/20 text-blue-400',
-      APPROVE: 'bg-green-500/20 text-green-400',
-      REJECT: 'bg-red-500/20 text-red-400',
-      NEEDS_INFO: 'bg-yellow-500/20 text-yellow-400',
+      APPROVE: 'bg-success/20 text-success',
+      REJECT: 'bg-danger/20 text-danger',
+      NEEDS_INFO: 'bg-warning/20 text-warning',
       CANCEL: 'bg-text-muted/20 text-text-muted',
       UPDATE_NOTE: 'bg-purple-500/20 text-purple-400',
     };
@@ -82,10 +82,10 @@ export default function History() {
 
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
-      PENDING: 'bg-yellow-500/20 text-yellow-400',
+      PENDING: 'bg-warning/20 text-warning',
       NEEDS_INFO: 'bg-orange-500/20 text-orange-400',
-      APPROVED: 'bg-green-500/20 text-green-400',
-      REJECTED: 'bg-red-500/20 text-red-400',
+      APPROVED: 'bg-success/20 text-success',
+      REJECTED: 'bg-danger/20 text-danger',
       CANCELED: 'bg-text-muted/20 text-text-muted',
     };
     const labels: Record<string, string> = {
@@ -125,29 +125,29 @@ export default function History() {
         <p className="text-text-muted text-sm md:text-base">Log de todas as ações realizadas no sistema</p>
       </div>
 
-      <div className="glass rounded-3xl p-4 border border-border-neon">
+      <div className="glass rounded-3xl p-4 border border-border">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por código, base, usuário ou ação..."
-          className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary"
+          className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary"
         />
       </div>
 
-      <div className="glass rounded-3xl border border-border-neon overflow-hidden">
+      <div className="glass rounded-3xl border border-border overflow-hidden">
         {/* Versão Desktop - Tabela */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-dark-surface-alt border-b border-border-neon">
+            <thead className="bg-bg-input border-b border-border">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Data/Hora</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Código</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Base</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Ação</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Usuário</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Status Atual</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-text-primary">Mensagem</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Data/Hora</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Código</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Base</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Ação</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Usuário</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Status Atual</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Mensagem</th>
               </tr>
             </thead>
             <tbody>
@@ -161,28 +161,28 @@ export default function History() {
                 filteredEvents.map((event) => (
                   <tr
                     key={event.id}
-                    className="border-b border-border-neon hover:bg-dark-surface-alt transition-colors"
+                    className="border-b border-border hover:bg-bg-input transition-colors"
                   >
-                    <td className="px-6 py-4 text-text-muted text-sm">
+                    <td className="px-6 py-5 text-sm text-text-muted">
                       {new Date(event.created_at).toLocaleString('pt-BR')}
                     </td>
-                    <td className="px-6 py-4 text-neon-primary font-medium">
+                    <td className="px-6 py-5 text-sm text-brand font-medium">
                       {event.request?.id_code || '-'}
                     </td>
-                    <td className="px-6 py-4 text-text-primary">{event.request?.base || '-'}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-5 text-sm text-text-primary">{event.request?.base || '-'}</td>
+                    <td className="px-6 py-5 text-sm">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActionColor(event.action)}`}>
                         {getActionLabel(event.action)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-text-primary">
+                    <td className="px-6 py-5 text-sm text-text-primary">
                       <div>
                         <div className="font-medium">{event.actor?.username || '-'}</div>
                         <div className="text-xs text-text-muted">{event.actor?.role || '-'}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">{getStatusBadge(event.request?.status || 'PENDING')}</td>
-                    <td className="px-6 py-4 text-text-muted text-sm max-w-md truncate">
+                    <td className="px-6 py-5 text-sm">{getStatusBadge(event.request?.status || 'PENDING')}</td>
+                    <td className="px-6 py-5 text-sm text-text-muted max-w-md truncate">
                       {event.message || '-'}
                     </td>
                   </tr>
@@ -203,12 +203,12 @@ export default function History() {
               {filteredEvents.map((event) => (
                 <div
                   key={event.id}
-                  className="p-4 rounded-xl bg-dark-surface-alt border border-border-neon"
+                  className="p-4 rounded-xl bg-bg-input border border-border"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-neon-primary font-semibold text-base">
+                        <h3 className="text-brand font-semibold text-base">
                           {event.request?.id_code || '-'}
                         </h3>
                         {getStatusBadge(event.request?.status || 'PENDING')}
@@ -223,7 +223,7 @@ export default function History() {
                     </span>
                   </div>
 
-                  <div className="mt-3 pt-3 border-t border-border-neon">
+                  <div className="mt-3 pt-3 border-t border-border">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <p className="text-text-muted text-xs">Usuário</p>

@@ -22,28 +22,28 @@ export default function ActionModal({ type, request, onClose, onConfirm }: Actio
       title: 'Aprovar Solicitação',
       label: 'Mensagem (opcional)',
       button: 'Aprovar',
-      buttonClass: 'bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 text-green-400',
+      buttonClass: 'bg-success/20 hover:bg-green-500/30 border border-green-500/50 text-success',
       required: false,
     },
     reject: {
       title: 'Rejeitar Solicitação',
       label: 'Mensagem (recomendada)',
       button: 'Rejeitar',
-      buttonClass: 'bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400',
+      buttonClass: 'bg-danger/20 hover:bg-red-500/30 border border-red-500/50 text-danger',
       required: false,
     },
     clarify: {
       title: 'Solicitar Esclarecimento',
       label: 'Mensagem (obrigatória)',
       button: 'Solicitar',
-      buttonClass: 'bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/50 text-yellow-400',
+      buttonClass: 'bg-warning/20 hover:bg-yellow-500/30 border border-yellow-500/50 text-warning',
       required: true,
     },
     cancel: {
       title: 'Cancelar Solicitação',
       label: '',
       button: 'Cancelar',
-      buttonClass: 'bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400',
+      buttonClass: 'bg-danger/20 hover:bg-red-500/30 border border-red-500/50 text-danger',
       required: false,
     },
   };
@@ -64,14 +64,14 @@ export default function ActionModal({ type, request, onClose, onConfirm }: Actio
       onClick={onClose}
     >
       <div
-        className="glass rounded-2xl p-4 md:p-6 border border-border-neon w-full max-w-md my-4"
+        className="glass rounded-2xl p-4 md:p-6 border border-border w-full max-w-md my-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg md:text-xl font-bold text-text-primary">{currentConfig.title}</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-dark-surface-alt text-text-muted hover:text-text-primary transition-colors no-outline"
+            className="p-2 rounded-xl hover:bg-bg-input text-text-muted hover:text-text-primary transition-colors no-outline"
           >
             <X size={20} />
           </button>
@@ -79,7 +79,7 @@ export default function ActionModal({ type, request, onClose, onConfirm }: Actio
 
         <div className="mb-4">
           <p className="text-text-muted text-sm">
-            Solicitação: <span className="text-neon-primary font-medium">{request.id_code}</span>
+            Solicitação: <span className="text-brand font-medium">{request.id_code}</span>
           </p>
         </div>
 
@@ -94,7 +94,7 @@ export default function ActionModal({ type, request, onClose, onConfirm }: Actio
                 onChange={(e) => setMessage(e.target.value)}
                 required={currentConfig.required}
                 rows={4}
-                className="w-full px-4 py-3 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary resize-none"
                 placeholder="Digite sua mensagem..."
               />
             </div>
@@ -103,14 +103,14 @@ export default function ActionModal({ type, request, onClose, onConfirm }: Actio
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <button
               type="submit"
-              className={`flex-1 py-2 rounded-xl ${currentConfig.buttonClass} text-text-primary font-semibold transition-all hover:neon-glow-sm no-outline w-full sm:w-auto`}
+              className={`flex-1 py-2 rounded-xl ${currentConfig.buttonClass} text-text-primary font-semibold transition-all hover:brand-glow-sm no-outline w-full sm:w-auto`}
             >
               {currentConfig.button}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all no-outline w-full sm:w-auto"
+              className="px-6 py-2 rounded-xl glass border border-border text-text-primary hover:bg-bg-input transition-all no-outline w-full sm:w-auto"
             >
               Cancelar
             </button>

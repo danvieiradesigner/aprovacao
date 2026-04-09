@@ -17,8 +17,8 @@ function LoginRoute() {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-bg">
-        <div className="text-neon-primary">Carregando...</div>
+      <div className="min-h-screen flex items-center justify-center bg-bg">
+        <div className="text-brand">Carregando...</div>
       </div>
     );
   }

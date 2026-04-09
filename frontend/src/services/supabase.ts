@@ -34,6 +34,15 @@ export interface ApprovalRequest {
   updated_at: string;
   requester?: UserProfile;
   approver?: UserProfile | null;
+  // Novos campos do fluxo de despesas
+  data_entrada?: string | null;
+  fornecedor?: string | null;
+  nf?: string | null;
+  forma_pagamento?: string | null;
+  data_vencimento_boleto?: string | null;
+  base_centro_custo?: string | null;
+  numero_referencia?: string | null;
+  data_pagamento?: string | null;
 }
 
 export interface RequestEvent {

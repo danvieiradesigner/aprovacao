@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase, ApprovalRequest } from '../services/supabase';
 import { useToast } from '../contexts/ToastContext';
 import DataTable from '../components/DataTable';
+import Select from '../components/Select';
 import * as XLSX from 'xlsx';
 
 export default function Reports() {
@@ -157,29 +158,29 @@ export default function Reports() {
         <button
           onClick={handleExport}
           disabled={requests.length === 0}
-          className="px-4 py-2 rounded-xl glass border border-border-neon text-text-primary hover:bg-dark-surface-alt transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed no-outline w-full sm:w-auto"
+          className="px-4 py-2 rounded-xl glass border border-border text-text-primary hover:bg-bg-input transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed no-outline w-full sm:w-auto"
         >
           📥 Exportar Excel
         </button>
       </div>
 
       {/* Filtros */}
-      <div className="glass rounded-2xl p-6 border border-border-neon">
+      <div className="glass rounded-2xl p-6 border border-border relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">Status</label>
-            <select
+            <Select
               value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
-            >
-              <option value="">Todos</option>
-              <option value="PENDING">Pendente</option>
-              <option value="NEEDS_INFO">Esclarecer</option>
-              <option value="APPROVED">Aprovada</option>
-              <option value="REJECTED">Rejeitada</option>
-              <option value="CANCELED">Cancelada</option>
-            </select>
+              onChange={(val) => setFilters({ ...filters, status: val })}
+              options={[
+                { value: '', label: 'Todos' },
+                { value: 'PENDING', label: 'Pendente' },
+                { value: 'NEEDS_INFO', label: 'Esclarecer' },
+                { value: 'APPROVED', label: 'Aprovada' },
+                { value: 'REJECTED', label: 'Rejeitada' },
+                { value: 'CANCELED', label: 'Cancelada' },
+              ]}
+            />
           </div>
 
           <div>
@@ -189,7 +190,7 @@ export default function Reports() {
               value={filters.base}
               onChange={(e) => setFilters({ ...filters, base: e.target.value })}
               placeholder="Filtrar por base..."
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary"
+              className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary"
             />
           </div>
 
@@ -200,7 +201,7 @@ export default function Reports() {
               value={filters.requester}
               onChange={(e) => setFilters({ ...filters, requester: e.target.value })}
               placeholder="Filtrar por solicitante..."
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary"
+              className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary"
             />
           </div>
 
@@ -210,7 +211,7 @@ export default function Reports() {
               type="date"
               value={filters.dateFrom}
               onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
+              className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary focus:outline-none focus:border-brand-primary"
             />
           </div>
 
@@ -220,7 +221,7 @@ export default function Reports() {
               type="date"
               value={filters.dateTo}
               onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-              className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary focus:outline-none focus:border-neon-primary"
+              className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary focus:outline-none focus:border-brand-primary"
             />
           </div>
 
@@ -233,7 +234,7 @@ export default function Reports() {
                 onChange={(e) => setFilters({ ...filters, min: e.target.value })}
                 placeholder="0.00"
                 step="0.01"
-                className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary"
+                className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary"
               />
             </div>
             <div>
@@ -244,7 +245,7 @@ export default function Reports() {
                 onChange={(e) => setFilters({ ...filters, max: e.target.value })}
                 placeholder="999999.99"
                 step="0.01"
-                className="w-full px-4 py-2 rounded-xl bg-dark-surface border border-border-neon text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-primary"
+                className="w-full px-4 py-2 rounded-xl bg-bg-card border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary"
               />
             </div>
           </div>

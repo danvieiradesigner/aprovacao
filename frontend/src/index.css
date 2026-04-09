@@ -16,14 +16,22 @@
 }
 
 :root {
-  --neon-primary: #C6F366;
-  --bg-dark: #070A08;
-  --bg-dark-alt: #0B0F0C;
-  --surface: #0F1511;
-  --surface-alt: #121A14;
-  --text-primary: #E6EAE6;
-  --text-muted: #9AA39C;
-  --border-neon: rgba(198, 243, 102, 0.15);
+  color-scheme: dark;
+  --brand-primary: #6366f1;
+  --brand-secondary: #818cf8;
+  --bg-dark: #080d1a;
+  --bg-sidebar: #0f172a;
+  --bg-card: #111827;
+  --bg-input: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+  --border-color: rgba(255, 255, 255, 0.06);
+  --brand-glow: rgba(99, 102, 241, 0.2);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
 }
 
 * {
@@ -93,7 +101,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-neon);
+  background: var(--border-color);
   border-radius: 4px;
 }
 
@@ -103,19 +111,34 @@ body {
 
 /* Glass effect */
 .glass {
-  background: rgba(15, 21, 17, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border-neon);
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
 }
 
-/* Neon glow */
-.neon-glow {
-  box-shadow: 0 0 20px rgba(198, 243, 102, 0.3);
+.glass-card {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
 }
 
-.neon-glow-sm {
-  box-shadow: 0 0 10px rgba(198, 243, 102, 0.2);
+/* Brand glow */
+.brand-glow {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.brand-glow-sm {
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+}
+
+/* Brand glow */
+.brand-glow {
+  box-shadow: 0 0 20px var(--brand-glow);
+}
+
+.brand-glow-sm {
+  box-shadow: 0 0 10px var(--brand-glow);
 }
 
 /* Animations */
@@ -135,17 +158,16 @@ body {
 }
 
 /* Button hover effects */
-.btn-neon {
+.brand-glow shadow-brand {
   transition: all 0.3s ease;
 }
 
-.btn-neon:hover {
+.brand-glow shadow-brand:hover {
   box-shadow: 0 0 20px rgba(198, 243, 102, 0.4);
   transform: translateY(-2px);
 }
 
 /* Estilos para elementos de formulário */
-select,
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -153,23 +175,37 @@ input[type="date"],
 input[type="number"],
 input[type="search"],
 textarea {
-  background-color: var(--surface) !important;
+  background-color: var(--bg-card) !important;
   color: var(--text-primary) !important;
-  border-color: var(--border-neon) !important;
+  border-color: var(--border-color) !important;
+}
+
+select {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+  appearance: none !important;
+  -moz-appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 0.75rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.25em 1.25em !important;
+  padding-right: 2.5rem !important;
 }
 
 select option {
-  background-color: var(--surface) !important;
+  background-color: var(--bg-card) !important;
   color: var(--text-primary) !important;
 }
 
 /* Remover bordas padrão brancas do navegador */
-select:focus,
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   outline: none !important;
-  border-color: var(--neon-primary) !important;
-  box-shadow: 0 0 0 1px var(--neon-primary) !important;
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 0 0 1px var(--brand-primary) !important;
 }
 
 /* Remover bordas padrão de tabelas */
@@ -189,12 +225,12 @@ td {
 .border-r,
 .border-b,
 .border-l {
-  border-color: var(--border-neon);
+  border-color: var(--border-color);
 }
 
 /* Exceções para cores específicas já definidas */
-.border-neon-primary,
-.border-border-neon,
+.border-brand,
+.border-border,
 [class*="border-green"],
 [class*="border-red"],
 [class*="border-yellow"],

@@ -6,6 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+// Configurações (Secrets)
+const EVO_URL = Deno.env.get("EVOLUTION_URL") || "https://evo.appsoncafari.cloud";
+const EVO_APIKEY = Deno.env.get("EVOLUTION_APIKEY") ?? "";
+const EVO_INSTANCE = Deno.env.get("EVOLUTION_INSTANCE") || "aprovacao-oncafari";
+
 interface ResponseWebhookPayload {
   status: 'aprovar' | 'rejeitar' | 'esclarecer';
   descricao: string;
@@ -17,7 +22,6 @@ interface ResponseWebhookPayload {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -25,97 +29,61 @@ serve(async (req) => {
   try {
     const payload: ResponseWebhookPayload = await req.json();
 
-    // Validação básica
-    if (!payload.status || !payload.request_id || !payload.id_code) {
+    if (!payload.status || !payload.id_code || !payload.telefone) {
       return new Response(
-        JSON.stringify({ error: 'Campos obrigatórios faltando: status, request_id, id_code' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
+        JSON.stringify({ error: 'Campos obrigatórios faltando: status, id_code, telefone' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // URL do webhook do n8n
-    const n8nWebhookUrl = 'https://n8n.appsoncafari.cloud/webhook/resposta';
+    // Formatar data para exibição
+    let formattedDate = '';
+    if (payload.purchase_date) {
+      try {
+        const date = new Date(payload.purchase_date);
+        formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+      } catch (e) { console.error(e); }
+    }
 
-    console.log('[send-response-webhook] Enviando para n8n:', {
-      url: n8nWebhookUrl,
-      method: 'POST',
-      payload: payload,
-    });
+    // Montar mensagem
+    let statusEmoji = payload.status === 'aprovar' ? '✅' : payload.status === 'rejeitar' ? '❌' : '⚠️';
+    let statusText = payload.status === 'aprovar' ? 'APROVADA' : payload.status === 'rejeitar' ? 'REJEITADA' : 'NECESSITA ESCLARECIMENTO';
+    
+    let message = `${statusEmoji} *DESPESA ${statusText}*\n\n`;
+    message += `Cod: ${payload.id_code}\n`;
+    if (formattedDate) message += `Data: ${formattedDate}\n`;
+    if (payload.purchase_description) message += `Descrição: ${payload.purchase_description}\n`;
+    
+    if (payload.descricao) {
+      message += `\n*Observação do Aprovador:*\n${payload.descricao}`;
+    }
 
-    // Faz a requisição para o n8n
-    const response = await fetch(n8nWebhookUrl, {
+    // Enviar para Evolution API diretamente
+    const url = `${EVO_URL}/message/sendText/${EVO_INSTANCE}`;
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'apikey': EVO_APIKEY,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        number: payload.telefone.replace(/\D/g, ''),
+        text: message,
+        options: { delay: 1000, presence: "composing" }
+      }),
     });
 
-    const responseText = await response.text();
-    let responseData;
-    
-    try {
-      responseData = JSON.parse(responseText);
-    } catch {
-      responseData = responseText;
-    }
-
-    console.log('[send-response-webhook] Resposta do n8n:', {
-      status: response.status,
-      statusText: response.statusText,
-      data: responseData,
-    });
-
-    if (!response.ok) {
-      // Se for 404, pode ser que o webhook não esteja configurado corretamente no n8n
-      if (response.status === 404) {
-        console.error('[send-response-webhook] Webhook não encontrado no n8n. Verifique:');
-        console.error('  1. Se o webhook está ativo no n8n');
-        console.error('  2. Se o webhook está configurado para aceitar POST');
-        console.error('  3. Se a URL está correta:', n8nWebhookUrl);
-        console.error('  4. Resposta do n8n:', responseData);
-      }
-      
-      return new Response(
-        JSON.stringify({ 
-          error: 'Erro ao enviar webhook para n8n',
-          details: responseData,
-          status: response.status,
-          message: response.status === 404 
-            ? 'Webhook não encontrado. Verifique se está ativo e configurado para POST no n8n.'
-            : 'Erro ao comunicar com n8n'
-        }),
-        { 
-          status: response.status || 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
-    }
+    const result = await response.json();
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Webhook enviado com sucesso',
-        data: responseData 
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      JSON.stringify({ success: true, evolution: result }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error: any) {
     console.error('[send-response-webhook] Erro:', error);
     return new Response(
-      JSON.stringify({ 
-        error: 'Erro interno ao processar webhook',
-        message: error.message 
-      }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

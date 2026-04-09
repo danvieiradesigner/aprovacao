@@ -1,0 +1,176 @@
+{
+  "name": "Registrar Lançamento no Dash",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "base"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "amount"
+            },
+            {
+              "name": "receipt_url"
+            },
+            {
+              "name": "note"
+            },
+            {
+              "name": "codigo"
+            },
+            {
+              "name": "link_comprovante"
+            },
+            {
+              "name": "numero"
+            }
+          ]
+        }
+      },
+      "id": "1f572d96-fcb2-4482-9765-069d4a704307",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        352,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "normalize-base",
+              "name": "base",
+              "value": "={{ $json.base || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-description",
+              "name": "description",
+              "value": "={{ $json.descricao || $json.description || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-amount",
+              "name": "amount",
+              "value": "={{ parseFloat(($json.valor || $json.amount || 0).toString().replace(',', '.').replace(/[^0-9.]/g, '')) }}",
+              "type": "number"
+            },
+            {
+              "id": "normalize-requester",
+              "name": "requester_email",
+              "value": "={{ $json.requester_email && $json.requester_email !== '' ? $json.requester_email : null }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-receipt",
+              "name": "receipt_url",
+              "value": "={{ $json.receipt_url && $json.receipt_url !== '' ? $json.receipt_url : null }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-note",
+              "name": "note",
+              "value": "={{ $json.note && $json.note !== '' ? $json.note : null }}",
+              "type": "string"
+            },
+            {
+              "id": "252a21fa-4b5e-4197-9866-6b604f33ada5",
+              "name": "numero",
+              "value": "={{ $json.numero }}",
+              "type": "string"
+            },
+            {
+              "id": "normalize-codigo",
+              "name": "codigo",
+              "value": "={{ $json.codigo || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        320
+      ],
+      "id": "7bd4a8d7-aca1-4972-ab57-b74f74458393",
+      "name": "Normalize Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mrgnfzxjkhnrdxkfkuxc.supabase.co/functions/v1/n8n-webhook",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yZ25menhqa2hucmR4a2ZrdXhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzNzA1NzQsImV4cCI6MjA4MDk0NjU3NH0.jn-tV7wjB8KgVv8KapEJ5sWHT5btHqfVzMBKZ4CzKrU"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"base\": \"{{ $json.base }}\",\n  \"codigo\": \"{{ $json.codigo || '' }}\",\n  \"description\": \"{{ $json.description }}\",\n  \"amount\": {{ $json.amount }},\n  \"requester_email\": \"{{ $json.requester_email || '' }}\",\n  \"requester_phone\": \"{{ $json.requester_phone || $json.numero || '' }}\",\n  \"receipt_url\": \"{{ $json.receipt_url || '' }}\",\n  \"note\": \"{{ $json.note || '' }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        720,
+        320
+      ],
+      "id": "eec353fb-8317-4e05-ada4-d633607c7e44",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e57b8ec7-5156-45d3-9056-81ee5dc235b4",
+  "meta": {
+    "instanceId": "2537f6f949a524b5549473105e05026197c278752d28105c698c5d0d6b84b3f8"
+  },
+  "id": "S2YKyux4BnzzaXJl",
+  "tags": []
+}

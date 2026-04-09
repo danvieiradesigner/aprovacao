@@ -200,17 +200,17 @@ export default function Pending() {
                 {
                   label: 'Aprovar',
                   onClick: (request) => setActionModal({ type: 'approve', request }),
-                  className: 'text-green-400 hover:bg-green-500/10',
+                  className: 'text-success hover:bg-green-500/10',
                 },
                 {
                   label: 'Esclarecer',
                   onClick: (request) => setActionModal({ type: 'clarify', request }),
-                  className: 'text-yellow-400 hover:bg-yellow-500/10',
+                  className: 'text-warning hover:bg-warning/10',
                 },
                 {
                   label: 'Rejeitar',
                   onClick: (request) => setActionModal({ type: 'reject', request }),
-                  className: 'text-red-400 hover:bg-red-500/10',
+                  className: 'text-danger hover:bg-danger/10',
                 },
               ]
             : canCancel
@@ -218,7 +218,7 @@ export default function Pending() {
                 {
                   label: 'Cancelar',
                   onClick: (request) => setActionModal({ type: 'cancel', request }),
-                  className: 'text-red-400 hover:bg-red-500/10',
+                  className: 'text-danger hover:bg-danger/10',
                 },
               ]
             : []
